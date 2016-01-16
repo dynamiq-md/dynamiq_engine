@@ -9,6 +9,7 @@ class PairwiseInteraction(object):
     def d2fdx2(self, x):
         raise NotImplementedError()
 
+    # these are only relevant if you have atom-atom distances to calculate
     def pdot_part(self, snapshot, i, j, pdot):
         pass
 

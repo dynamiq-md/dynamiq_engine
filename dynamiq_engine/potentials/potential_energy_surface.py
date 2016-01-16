@@ -35,10 +35,18 @@ class PotentialEnergySurface(object):
 
 class OneDimensionalModel(PotentialEnergySurface):
     def __init__(self, interaction):
-        self.derivatives_defined = 2
+        self.derivatives_defined = 0
         self.interaction = interaction
 
     def H(self, snapshot):
         x = snapshot.positions[0]
         return self.kinetic_energy(snapshot) + self.interaction.f(x)
 
+    def dHdq(self, snapshot):
+        x = snapshot.positions[0]
+        return np.array([self.interaction.dfdx(x)])
+
+    def dHdp(self, snapshot):
+        return np.array([snapshot.momenta[0]])
+
+    # TODO: the rest is only necessary for full semiclassical calculations
