@@ -5,7 +5,7 @@ python:
 
 install:
     - deactivate
-    #- source devtools/ci/install.sh
+    - source devtools/ci/install_conda.sh
     - export PYTHONUNBUFFERED=true
 
 script:
