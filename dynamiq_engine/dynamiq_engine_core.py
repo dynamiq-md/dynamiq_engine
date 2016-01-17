@@ -1,7 +1,6 @@
 # again, this should inherit from the paths.AbstractSnapshot
 import openpathsampling as paths
-import openpathsampling.features as features
-import momentum_feature 
+import features
 
 from openpathsampling.netcdfplus import StorableObject, lazy_loading_attributes
 
@@ -29,7 +28,7 @@ class DynamiqEngine(paths.DynamicsEngine):
 
 @lazy_loading_attributes('_reversed')
 class Snapshot(paths.AbstractSnapshot):
-    __features__ = [features.coordinates, momentum_feature]
+    __features__ = [paths.features.coordinates, features.momenta]
     def __init__(self, coordinates=None, momenta=None, is_reversed=False,
                  topology=None, reversed_copy=None):
         """

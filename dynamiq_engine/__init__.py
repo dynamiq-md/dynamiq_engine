@@ -1,5 +1,5 @@
 import integrators
 import potentials
 
-import momentum_feature
+import features
 from dynamiq_engine_core import DynamiqEngine, Snapshot, Topology
