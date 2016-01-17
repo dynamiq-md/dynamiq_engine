@@ -26,23 +26,38 @@ class DynamiqEngine(paths.DynamicsEngine):
         self.integrator.step(self, self.nsteps_per_frame)
         return self.current_snapshot
 
+    def generate_n_frames(self, n):
+        pass
+
+
 @lazy_loading_attributes('_reversed')
 class Snapshot(paths.AbstractSnapshot):
     __features__ = [paths.features.coordinates, features.momenta]
-    def __init__(self, coordinates=None, momenta=None, is_reversed=False,
-                 topology=None, reversed_copy=None):
+    def __init__(self, coordinates=None, momenta=None, monodromy=None, 
+                 is_reversed=False, topology=None, reversed_copy=None):
         """
         Creates a dynq.Snapshot
+
+        By default, the monodromy matrices and actions associated with each
+        snapshot are not saved. 
         """
         self.coordinates = coordinates
         self.momenta = momenta
-
+        self.topology = topology
+        # set monodromy matrices and action value
+        if monodromy is not None:
+            self._Mqq = monodromy[0]
+            self._Mqp = monodromy[1]
+            self._Mpq = monodromy[2]
+            self._Mpp = monodromy[3]
 
     @property
     def velocities(self):
         return self.momenta * self.topology.inverse_masses
 
-    xyz = coordinates
+    @property
+    def xyz(self):
+        return self.coordinates
 
     def copy(self):
         this = Snapshot(
@@ -52,6 +67,20 @@ class Snapshot(paths.AbstractSnapshot):
             topology=self.topology
         )
         return this
+
+    def detach_monodromy(self):
+        """Removes links to monodromy matrices.
+
+        Useful if the already-allocated monodromy matrices will be reused
+        for a later trajectory.
+        """
+        self._Mqq = None
+        self._Mqp = None
+        self._Mpq = None
+        self._Mpp = None
+
+    def copy_from(self, other):
+        pass
 
 
 class Topology(paths.Topology):

@@ -35,6 +35,8 @@ class PotentialEnergySurface(object):
 
 class OneDimensionalModel(PotentialEnergySurface):
     def __init__(self, interaction):
+        self.n_atoms = 1
+        self.n_spatial = 1
         self.derivatives_defined = 0
         self.interaction = interaction
 

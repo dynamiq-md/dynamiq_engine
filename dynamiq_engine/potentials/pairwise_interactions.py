@@ -9,6 +9,9 @@ class PairwiseInteraction(object):
     def d2fdx2(self, x):
         raise NotImplementedError()
 
+    def __call__(self, x):
+        return self.f(x)
+
     # these are only relevant if you have atom-atom distances to calculate
     def pdot_part(self, snapshot, i, j, pdot):
         pass
@@ -22,13 +25,13 @@ class HarmonicOscillatorInteraction(PairwiseInteraction):
         self.x0 = x0
 
     def f(self, x):
-        return 0.5*k*(x-x0)*(x-x0)
+        return 0.5*self.k*(x-self.x0)*(x-self.x0)
 
     def dfdx(self, x):
-        return k*(x-x0)
+        return self.k*(x-self.x0)
 
     def d2fdx2(self, x):
-        return k
+        return self.k
 
 
 

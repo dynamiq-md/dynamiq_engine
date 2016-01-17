@@ -8,12 +8,34 @@ class testHarmonicOscillatorInteraction(object):
         self.ho = HarmonicOscillatorInteraction(k=2.0, x0=1.0)
 
     def test_f(self):
-        raise SkipTest
+        tests = {
+            0.0 : 1.0, # = 0.5*2.0*(0.0-1.0)^2
+            1.0 : 0.0,
+            0.5 : 0.25, # = 0.5*2.0*(0.5-1.0)^2
+            2.0 : 1.0
+        }
+        for val in tests.keys():
+            assert_almost_equal(self.ho.f(val), tests[val])
+            assert_almost_equal(self.ho(val), tests[val])
 
     def test_dfdx(self):
-        raise SkipTest
+        tests = {
+            0.0 : -2.0,
+            1.0 : 0.0,
+            0.5 : -1.0,
+            2.0 : 2.0
+        }
+        for val in tests.keys():
+            assert_almost_equal(self.ho.dfdx(val), tests[val])
 
     def test_d2fdx2(self):
-        raise SkipTest
+        tests = {
+            0.0 : 2.0,
+            1.0 : 2.0,
+            0.5 : 2.0,
+            2.0 : 2.0
+        }
+        for val in tests.keys():
+            assert_almost_equal(self.ho.d2fdx2(val), tests[val])
 
     
