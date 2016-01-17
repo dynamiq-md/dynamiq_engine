@@ -12,7 +12,7 @@ script:
     - conda install --yes conda-build
     - conda build devtools/conda-recipe
     
-    - source activate _test
+    - source activate test
     - nosetests -v
 
 env:

@@ -16,7 +16,7 @@ requirements:
         - numpy
         - scipy
         - pandas
-        - openpathsampling
+        - openpathsampling-dev
 
 
 test:
