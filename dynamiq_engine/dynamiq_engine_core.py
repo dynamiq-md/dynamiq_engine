@@ -1,34 +1,9 @@
-# again, this should inherit from the paths.AbstractSnapshot
+# This module includes all the classes necessary to make the dynq engine
+# compatible with OPS, etc.
 import openpathsampling as paths
 import features
 
-from openpathsampling.netcdfplus import StorableObject, lazy_loading_attributes
-
-class DynamiqEngine(paths.DynamicsEngine):
-    default_options = {
-        'integ' : None,
-        'n_frames_max' : None,
-        'nsteps_per_frame' : 1
-    }
-    def __init__(self, potential, integrator, template):
-        self.potential = potential
-        self.integrator = integrator
-
-    @property
-    def current_snapshot(self):
-        pass
-
-    @current_snapshot.setter
-    def current_snapshot(self, snap):
-        pass
-
-    def generate_next_frame(self):
-        self.integrator.step(self, self.nsteps_per_frame)
-        return self.current_snapshot
-
-    def generate_n_frames(self, n):
-        pass
-
+from openpathsampling.netcdfplus import lazy_loading_attributes
 
 @lazy_loading_attributes('_reversed')
 class Snapshot(paths.AbstractSnapshot):
@@ -98,3 +73,31 @@ class Topology(paths.Topology):
 
     def subset(self, list_of_atoms):
         return self
+
+class DynamiqEngine(paths.DynamicsEngine):
+    default_options = {
+        'integ' : None,
+        'n_frames_max' : None,
+        'nsteps_per_frame' : 1
+    }
+
+    base_snapshot_type = Snapshot
+
+    def __init__(self, potential, integrator, template):
+        self.potential = potential
+        self.integrator = integrator
+
+    @property
+    def current_snapshot(self):
+        pass
+
+    @current_snapshot.setter
+    def current_snapshot(self, snap):
+        pass
+
+    def generate_next_frame(self):
+        self.integrator.step(self, self.nsteps_per_frame)
+        return self.current_snapshot
+
+    def generate_n_frames(self, n):
+        pass

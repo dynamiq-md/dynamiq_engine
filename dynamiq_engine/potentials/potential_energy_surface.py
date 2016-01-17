@@ -3,11 +3,11 @@ class PotentialEnergySurface(object):
 
     Attributes
     ----------
-    derivatives_defined : integer (0, 1, or 2)
+    dynamics_level : integer (0, 1, or 2)
         Level required to simulate the system
     """
-    def __init__(self, n_dim):
-        self.derivatives_defined = 0
+    def __init__(self):
+        self.dynamics_level = 0
 
     def H(self, snapshot):
         raise NotImplementedError("Using generic PES object")
@@ -33,11 +33,11 @@ class PotentialEnergySurface(object):
     def d2Hdpdq(self, snapshot):
         raise NotImplementedError("Using generic PES object")
 
-class OneDimensionalModel(PotentialEnergySurface):
+class OneDimensionalInteractionModel(PotentialEnergySurface):
     def __init__(self, interaction):
         self.n_atoms = 1
         self.n_spatial = 1
-        self.derivatives_defined = 0
+        self.dynamics_level = 0
         self.interaction = interaction
 
     def H(self, snapshot):
@@ -49,6 +49,6 @@ class OneDimensionalModel(PotentialEnergySurface):
         return np.array([self.interaction.dfdx(x)])
 
     def dHdp(self, snapshot):
-        return np.array([snapshot.momenta[0]])
+        return np.array([snapshot.velocities[0]])
 
     # TODO: the rest is only necessary for full semiclassical calculations
