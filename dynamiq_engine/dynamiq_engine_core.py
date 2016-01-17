@@ -1,14 +1,14 @@
 # This module includes all the classes necessary to make the dynq engine
 # compatible with OPS, etc.
 import openpathsampling as paths
+import dynamiq_engine as dynq
 import numpy as np
-import dynamiq_engine.features as features
 
 from openpathsampling.netcdfplus import lazy_loading_attributes
 
 @lazy_loading_attributes('_reversed')
 class Snapshot(paths.AbstractSnapshot):
-    __features__ = [paths.features.coordinates, features.momenta]
+    __features__ = [paths.features.coordinates, dynq.features.momenta]
     def __init__(self, coordinates=None, momenta=None, monodromy=None, 
                  is_reversed=False, topology=None, reversed_copy=None):
         """
