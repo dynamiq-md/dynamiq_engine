@@ -3,3 +3,5 @@ from nose.tools import (
     raises
 )
 from nose.plugins.skip import Skip, SkipTest
+
+from numpy.testing import assert_array_almost_equal

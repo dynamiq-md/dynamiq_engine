@@ -1,3 +1,5 @@
+import numpy as np
+
 class PotentialEnergySurface(object):
     """Abstract class for potential energy surfaces
 
@@ -12,8 +14,8 @@ class PotentialEnergySurface(object):
     def H(self, snapshot):
         raise NotImplementedError("Using generic PES object")
 
-    def T(self, snapshot):
-        pass
+    def kinetic_energy(self, snapshot):
+        return 0.5*np.dot(snapshot.velocities, snapshot.momenta)
 
     def dHdq(self, snapshot):
         raise NotImplementedError("Using generic PES object")
@@ -41,11 +43,11 @@ class OneDimensionalInteractionModel(PotentialEnergySurface):
         self.interaction = interaction
 
     def H(self, snapshot):
-        x = snapshot.positions[0]
+        x = snapshot.coordinates[0]
         return self.kinetic_energy(snapshot) + self.interaction.f(x)
 
     def dHdq(self, snapshot):
-        x = snapshot.positions[0]
+        x = snapshot.coordinates[0]
         return np.array([self.interaction.dfdx(x)])
 
     def dHdp(self, snapshot):

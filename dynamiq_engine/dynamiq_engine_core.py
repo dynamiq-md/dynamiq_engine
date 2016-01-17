@@ -1,6 +1,7 @@
 # This module includes all the classes necessary to make the dynq engine
 # compatible with OPS, etc.
 import openpathsampling as paths
+import numpy as np
 import features
 
 from openpathsampling.netcdfplus import lazy_loading_attributes
