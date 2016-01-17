@@ -9,8 +9,7 @@ install:
     - export PYTHONUNBUFFERED=true
 
 script:
-    - echo "Travis script started"
-    #- nosetests -v
+    - nosetests -v
 
 env:
     matrix:
