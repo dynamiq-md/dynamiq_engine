@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/dwhswenson/DynamiqEngine.svg?branch=master)](https://travis-ci.org/dwhswenson/DynamiqEngine)
+
 # DynamiqEngine
 
 MD Engine for `dynamiq` (engine as a separate package for reuse elsewhere)
