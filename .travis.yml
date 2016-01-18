@@ -12,8 +12,8 @@ script:
     - conda install --yes conda-build
     - conda build devtools/conda-recipe
     
-    #- source activate test
-    #- nosetests -v
+    - source activate _test
+    - nosetests -v
 
 env:
     matrix:
