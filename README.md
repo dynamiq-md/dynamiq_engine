@@ -1,8 +1,7 @@
-[![Build Status](https://travis-ci.org/dwhswenson/dynamiq_engine.svg?branch=master)](https://travis-ci.org/dwhswenson/dynamiq_engine)
-[![Coverage
-Status](https://coveralls.io/repos/dwhswenson/dynamiq_engine/badge.svg?branch=master&service=github)](https://coveralls.io/github/dwhswenson/dynamiq_engine?branch=master)
+[![Build Status](https://travis-ci.org/dynamiq-md/dynamiq_engine.svg?branch=master)](https://travis-ci.org/dynamiq-md/dynamiq_engine)
+[![Coverage Status](https://coveralls.io/repos/dynamiq-md/dynamiq_engine/badge.svg?branch=master&service=github)](https://coveralls.io/github/dynamiq-md/dynamiq_engine?branch=master)
 
-# DynamiqEngine
+# dynamiq_engine
 
 MD Engine for `dynamiq` (engine as a separate package for reuse elsewhere)
 
