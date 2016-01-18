@@ -93,9 +93,18 @@ def buildKeywordDictionary():
     setupKeywords["author_email"]      = "dwhs@hyperblazer.net"
     setupKeywords["license"]           = "LGPL 2.1 of greater"
     setupKeywords["download_url"]      = "http://github.com/dwhswenson/DynamiqEngine"
-    setupKeywords["packages"]          = ['dynamiq_engine']
+    setupKeywords["packages"]          = ['dynamiq_engine',
+                                          'dynamiq_engine.features',
+                                          'dynamiq_engine.integrators',
+                                          'dynamiq_engine.potentials',
+                                          'dynamiq_engine.tests'
+                                         ]
     setupKeywords["package_dir"]       = {
-        'dynamiq_engine' : 'dynamiq_engine'
+        'dynamiq_engine' : 'dynamiq_engine',
+        'dynamiq_engine.features' : 'dynamiq_engine/features',
+        'dynamiq_engine.integrators' : 'dynamiq_engine/integrators',
+        'dynamiq_engine.potentials' : 'dynamiq_engine/potentials',
+        'dynamiq_engine.tests' : 'dynamiq_engine/tests'
     }
     #setupKeywords["py_modules"]        = ["pymbar", "timeseries", "testsystems", "confidenceintervals"]
     setupKeywords["data_files"]        = []

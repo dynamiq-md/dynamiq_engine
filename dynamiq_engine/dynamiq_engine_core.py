@@ -2,7 +2,7 @@
 # compatible with OPS, etc.
 import openpathsampling as paths
 import numpy as np
-import features
+import dynamiq_engine.features as features
 
 from openpathsampling.netcdfplus import lazy_loading_attributes
 

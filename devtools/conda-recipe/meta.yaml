@@ -1,0 +1,27 @@
+package:
+    name: dynamiq_engine-dev
+    version: "0.0.1"
+
+source:
+    path: ../../
+
+requirements:
+    build:
+        - python
+        - setuptools
+        - numpy
+
+    run:
+        - python
+        - numpy
+        - scipy
+        - pandas
+        - openpathsampling-dev
+
+
+test:
+    requires:
+        - nose
+
+    imports:
+        - dynamiq_engine
