@@ -22,7 +22,7 @@ requirements:
 test:
     requires:
         - nose
-        - coveralls-python
+        - python-coveralls
 
     imports:
         - dynamiq_engine
