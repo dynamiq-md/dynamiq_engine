@@ -22,6 +22,7 @@ requirements:
 test:
     requires:
         - nose
+        - python-coveralls
 
     imports:
         - dynamiq_engine

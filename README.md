@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.org/dwhswenson/DynamiqEngine.svg?branch=master)](https://travis-ci.org/dwhswenson/DynamiqEngine)
+[![Build Status](https://travis-ci.org/dwhswenson/dynamiq_engine.svg?branch=master)](https://travis-ci.org/dwhswenson/dynamiq_engine)
+[![Coverage
+Status](https://coveralls.io/repos/dwhswenson/dynamiq_engine/badge.svg?branch=master&service=github)](https://coveralls.io/github/dwhswenson/dynamiq_engine?branch=master)
 
 # DynamiqEngine
 
