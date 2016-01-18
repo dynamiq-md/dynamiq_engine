@@ -13,7 +13,10 @@ script:
     - conda build devtools/conda-recipe
     
     - source activate _test
-    - nosetests -v
+    - nosetests -v --with-coverage
+
+after_success:
+    - coveralls
 
 env:
     matrix:
