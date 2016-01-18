@@ -8,9 +8,6 @@ class PotentialEnergySurface(object):
     dynamics_level : integer (0, 1, or 2)
         Level required to simulate the system
     """
-    def __init__(self):
-        self.dynamics_level = 0
-
     def H(self, snapshot):
         raise NotImplementedError("Using generic PES object")
 
@@ -37,6 +34,7 @@ class PotentialEnergySurface(object):
 
 class OneDimensionalInteractionModel(PotentialEnergySurface):
     def __init__(self, interaction):
+        super(OneDimensionalInteractionModel, self).__init__()
         self.n_atoms = 1
         self.n_spatial = 1
         self.dynamics_level = 0
