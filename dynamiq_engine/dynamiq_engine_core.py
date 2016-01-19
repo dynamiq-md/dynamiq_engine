@@ -20,6 +20,7 @@ class Snapshot(paths.AbstractSnapshot):
         self.coordinates = coordinates
         self.momenta = momenta
         self.topology = topology
+        self.is_reversed = is_reversed
         # set monodromy matrices and action value
         if monodromy is not None:
             self._Mqq = monodromy[0]
@@ -37,7 +38,7 @@ class Snapshot(paths.AbstractSnapshot):
 
     def copy(self):
         this = Snapshot(
-            coordinate=self.coordinates, 
+            coordinates=self.coordinates, 
             momenta=self.momenta, 
             is_reversed=self.is_reversed,
             topology=self.topology

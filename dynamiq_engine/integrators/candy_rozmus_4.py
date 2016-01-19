@@ -13,7 +13,7 @@ class CandyRozmus4(Integrator):
         super(CandyRozmus4, self).__init__(dt)
         self._a_k = [
             0.5*(1.0 - 1.0/math.sqrt(3.0))*self.dt,
-            1.0/sqrt(3.0)*self.dt,
+            1.0/math.sqrt(3.0)*self.dt,
             -0.5*(1.0 - 1.0/math.sqrt(3.0))*self.dt,
             0.5*(1.0 + 1.0/math.sqrt(3.0))*self.dt,
         ]
@@ -25,8 +25,8 @@ class CandyRozmus4(Integrator):
         ]
         n_spatial = potential.n_spatial
         n_atoms = potential.n_atoms
-        self.local_dHdq = np.zeros((self.n_spatial * self.n_atoms))
-        self.local_dHdp = np.zeros((self.n_spatial * self.n_atoms))
+        self.local_dHdq = np.zeros((n_spatial * n_atoms))
+        self.local_dHdp = np.zeros((n_spatial * n_atoms))
 
     def momentum_update(self, potential, snap, k):
         potential.set_dHdq(self.local_dHdq, snap)
@@ -42,14 +42,13 @@ class CandyRozmus4(Integrator):
         pass
 
     def step(self, potential, old_snap, new_snap):
-        intermediate.copy_from(old_snap)
+        new_snap = old_snap.copy()
         for k in range(4):
-            momentum_step(potential, intermediate, k)
+            self.momentum_update(potential, new_snap, k)
             # TODO: monodromy and action
-            position_step(potential, intermediate, k)
-
+            self.position_update(potential, new_snap, k)
         # wrap PBCs if necessary
-        new_snap.copy_from(intermediate)
+
 
 
 # to be done later
