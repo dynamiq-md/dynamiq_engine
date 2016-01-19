@@ -17,13 +17,21 @@ class testTopology(object):
 
 class testSnapshot(object):
     def setup(self):
-        pass
+        self.topology = Topology(
+            masses=np.array([2.0]),
+            potential=stubs.PotentialStub()
+        )
+        self.snap = Snapshot(
+            coordinates=np.array([1.0]),
+            momenta=np.array([1.0]),
+            topology=self.topology
+        )
 
-    def velocities(self):
-        raise SkipTest
+    def test_velocities(self):
+        assert_array_almost_equal(self.snap.velocities, np.array([0.5]))
 
-    def xyz(self):
-        raise SkipTest
+    def test_xyz(self):
+        assert_array_almost_equal(self.snap.coordinates, self.snap.xyz)
 
 
 class testDynamiqEngine(object):

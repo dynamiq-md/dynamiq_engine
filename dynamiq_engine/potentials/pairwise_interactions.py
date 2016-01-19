@@ -14,10 +14,10 @@ class PairwiseInteraction(object):
 
     # these are only relevant if you have atom-atom distances to calculate
     def pdot_part(self, snapshot, i, j, pdot):
-        pass
+        pass #pragma: no cover
 
     def V_part(self, snapshot, i, j):
-        pass
+        pass #pragma: no cover
 
 class HarmonicOscillatorInteraction(PairwiseInteraction):
     def __init__(self, k, x0):

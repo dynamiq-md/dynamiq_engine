@@ -73,7 +73,7 @@ class Topology(paths.Topology):
         return self._inverse_masses
 
     def subset(self, list_of_atoms):
-        return self
+        return self # pragma: no cover
 
 class DynamiqEngine(paths.DynamicsEngine):
     default_options = {
