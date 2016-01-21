@@ -19,6 +19,19 @@ class PairwiseInteraction(object):
     def V_part(self, snapshot, i, j):
         pass #pragma: no cover
 
+class ConstantInteraction(PairwiseInteraction):
+    def __init__(self, value):
+        self.value = value
+
+    def f(self, x):
+        return self.value
+
+    def dfdx(self, x):
+        return 0.0
+
+    def d2fdx2(self, x):
+        return 0.0
+
 class HarmonicOscillatorInteraction(PairwiseInteraction):
     def __init__(self, k, x0):
         self.k = k
