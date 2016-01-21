@@ -8,13 +8,14 @@ class CandyRozmus4(Integrator):
 
     References
     ----------
+
     """
     def __init__(self, dt, potential, n_frames=1):
         super(CandyRozmus4, self).__init__(dt)
         self._a_k = [
             0.5*(1.0 - 1.0/math.sqrt(3.0))*self.dt,
             1.0/math.sqrt(3.0)*self.dt,
-            -0.5*(1.0 - 1.0/math.sqrt(3.0))*self.dt,
+            -1.0/math.sqrt(3.0)*self.dt,
             0.5*(1.0 + 1.0/math.sqrt(3.0))*self.dt,
         ]
         self._b_k = [
@@ -43,16 +44,11 @@ class CandyRozmus4(Integrator):
 
     def step(self, potential, old_snap, new_snap):
         new_snap.copy_from(old_snap)
-        #print new_snap.coordinates, new_snap.momenta
         for k in range(4):
             self.momentum_update(potential, new_snap, k)
             # TODO: monodromy and action
             self.position_update(potential, new_snap, k)
-            #print new_snap.coordinates, new_snap.momenta
-        #print new_snap.coordinates
         # wrap PBCs if necessary
-
-
 
 # to be done later
 class CandyRozmus4Monodromy(CandyRozmus4):
