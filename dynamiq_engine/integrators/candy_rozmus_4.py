@@ -25,28 +25,31 @@ class CandyRozmus4(Integrator):
         ]
         n_spatial = potential.n_spatial
         n_atoms = potential.n_atoms
-        self.local_dHdq = np.zeros((n_spatial * n_atoms))
-        self.local_dHdp = np.zeros((n_spatial * n_atoms))
+        self.local_dHdq = np.zeros(n_spatial * n_atoms)
+        self.local_dHdp = np.zeros(n_spatial * n_atoms)
 
     def momentum_update(self, potential, snap, k):
         potential.set_dHdq(self.local_dHdq, snap)
-        self.local_dHdq *= self._a_k[k]
-        np.add(snap.momenta, self.local_dHdq, snap.momenta)
+        self.local_dHdq *= self._b_k[k]
+        np.subtract(snap.momenta, self.local_dHdq, snap.momenta)
 
     def position_update(self, potential, snap, k):
         potential.set_dHdp(self.local_dHdp, snap)
-        self.local_dHdp *= self._b_k[k]
-        np.subtract(snap.coordinates, self.local_dHdp, snap.coordinates)
+        self.local_dHdp *=  self._a_k[k]
+        np.add(snap.coordinates, self.local_dHdp, snap.coordinates)
 
     def action_step(self, potential, old_snap, new_snap, k):
         pass
 
     def step(self, potential, old_snap, new_snap):
-        new_snap = old_snap.copy()
+        new_snap.copy_from(old_snap)
+        #print new_snap.coordinates, new_snap.momenta
         for k in range(4):
             self.momentum_update(potential, new_snap, k)
             # TODO: monodromy and action
             self.position_update(potential, new_snap, k)
+            #print new_snap.coordinates, new_snap.momenta
+        #print new_snap.coordinates
         # wrap PBCs if necessary
 
 

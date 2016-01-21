@@ -37,13 +37,13 @@ class Snapshot(paths.AbstractSnapshot):
         return self.coordinates
 
     def copy(self):
-        this = Snapshot(
-            coordinates=self.coordinates, 
-            momenta=self.momenta, 
+        new_snap = Snapshot(
+            coordinates=self.coordinates.copy(), 
+            momenta=self.momenta.copy(), 
             is_reversed=self.is_reversed,
             topology=self.topology
         )
-        return this
+        return new_snap
 
     def detach_monodromy(self):
         """Removes links to monodromy matrices.
@@ -57,7 +57,11 @@ class Snapshot(paths.AbstractSnapshot):
         self._Mpp = None
 
     def copy_from(self, other):
-        pass
+        np.copyto(self.coordinates, other.coordinates)
+        np.copyto(self.momenta, other.momenta)
+        # TODO: monodromy
+        self.topology = other.topology
+        self.is_reversed = other.is_reversed
 
 
 class Topology(paths.Topology):
