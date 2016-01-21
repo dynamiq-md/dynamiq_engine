@@ -15,9 +15,19 @@ class PotentialEnergySurface(object):
         return 0.5*np.dot(snapshot.velocities, snapshot.momenta)
 
     def dHdq(self, snapshot):
+        dHdq = np.zeros(self.n_spatial * self.n_atoms)
+        self.set_dHdq(dHdq, snapshot)
+        return dHdq
+
+    def set_dHdq(self, dHdq, snapshot):
         raise NotImplementedError("Using generic PES object")
 
     def dHdp(self, snapshot):
+        dHdp = np.zeros(self.n_spatial * self.n_atoms)
+        self.set_dHdp(dHdp, snapshot)
+        return dHdp
+
+    def set_dHdp(self, dHdp, snapshot):
         raise NotImplementedError("Using generic PES object")
 
     def d2Hdq2(self, snapshot):
@@ -44,11 +54,11 @@ class OneDimensionalInteractionModel(PotentialEnergySurface):
         x = snapshot.coordinates[0]
         return self.kinetic_energy(snapshot) + self.interaction.f(x)
 
-    def dHdq(self, snapshot):
+    def set_dHdq(self, dHdq, snapshot):
         x = snapshot.coordinates[0]
-        return np.array([self.interaction.dfdx(x)])
+        dHdq[0] = self.interaction.dfdx(x)
 
-    def dHdp(self, snapshot):
-        return np.array([snapshot.velocities[0]])
+    def set_dHdp(self, dHdp, snapshot):
+        dHdp[0] = snapshot.velocities[0]
 
     # TODO: the rest is only necessary for full semiclassical calculations
