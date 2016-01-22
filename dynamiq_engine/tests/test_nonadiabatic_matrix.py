@@ -26,6 +26,8 @@ class testNonadiabaticMatrix(object):
             # Snapshots a little.
             topology=dynq.Topology(masses=np.array([1.0]), potential=self.V1)
         )
+        # V1(snap) = 0.5*2.0*(0.5-0.0)**2 = 0.25
+        # V2(snap) = 0.5*3.0*(0.5-1.0)**2 = 0.375
 
     def test_build_from_number_matrix(self):
         na = NonadiabaticMatrix(self.numbers_matrix)
@@ -53,10 +55,15 @@ class testNonadiabaticMatrix(object):
                                   np.array(self.numbers_matrix))
 
     def test_numeric_matrix_mixed_input(self):
-        raise SkipTest
+        na = NonadiabaticMatrix(self.mixed_matrix)
+        expected = np.array([[0.25, 2.0], [2.0, 0.375]])
+        assert_array_almost_equal(na.numeric_matrix(self.snap), expected)
 
-    def test_get_item(self):
-        raise SkipTest
+    def test_getitem(self):
+        mixed_matrix = NonadiabaticMatrix(self.mixed_matrix)
+        mixed_dict = NonadiabaticMatrix.from_dictionary(self.mixed_dict)
+        assert_equal(mixed_matrix[1,1], self.V2)
+        assert_equal(mixed_dict[1,1], self.V2)
 
     def bad_entries_string(self):
         raise SkipTest

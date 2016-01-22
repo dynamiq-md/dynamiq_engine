@@ -62,7 +62,7 @@ class NonadiabaticMatrix(object):
         return res
 
 
-    def __get_item__(self, label):
+    def __getitem__(self, label):
         return self.dictionary[label]
 
 
