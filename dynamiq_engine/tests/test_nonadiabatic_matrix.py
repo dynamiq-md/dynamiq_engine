@@ -18,6 +18,14 @@ class testNonadiabaticMatrix(object):
         self.mixed_matrix = [[self.V1, 2.0], [2.0, self.V2]]
         self.mixed_dict = {(0,0) : self.V1, (0,1) : 2.0, 
                            (1,0) : 2.0, (1,1) : self.V2}
+        self.snap = dynq.Snapshot(
+            coordinates=np.array([0.5]),
+            momenta=np.array([0.0]),
+            # arbitrarily chose V1: has the same (n_atoms, n_spatial) as any
+            # other. A bit weird; ideally this will change when JHP changes
+            # Snapshots a little.
+            topology=dynq.Topology(masses=np.array([1.0]), potential=self.V1)
+        )
 
     def test_build_from_number_matrix(self):
         na = NonadiabaticMatrix(self.numbers_matrix)
@@ -40,8 +48,9 @@ class testNonadiabaticMatrix(object):
         assert_equal(na.matrix, self.mixed_matrix)
 
     def test_numeric_matrix_number_input(self):
-        #assert_equal(na.numeric_matrix(self.snap), self.numbers_matrix)
-        raise SkipTest
+        na = NonadiabaticMatrix(self.numbers_matrix)
+        assert_array_almost_equal(na.numeric_matrix(self.snap),
+                                  np.array(self.numbers_matrix))
 
     def test_numeric_matrix_mixed_input(self):
         raise SkipTest

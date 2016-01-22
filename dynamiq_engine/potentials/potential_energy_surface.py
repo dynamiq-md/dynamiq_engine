@@ -11,6 +11,12 @@ class PotentialEnergySurface(object):
     def H(self, snapshot):
         raise NotImplementedError("Using generic PES object")
 
+    def V(self, snapshot):
+        raise NotImplementedError("Using generic PES object")
+
+    def __call__(self, snapshot):
+        return self.V(snapshot)
+
     def kinetic_energy(self, snapshot):
         return 0.5*np.dot(snapshot.velocities, snapshot.momenta)
 
@@ -53,6 +59,9 @@ class OneDimensionalInteractionModel(PotentialEnergySurface):
     def H(self, snapshot):
         x = snapshot.coordinates[0]
         return self.kinetic_energy(snapshot) + self.interaction.f(x)
+
+    def V(self, snapshot):
+        return self.interaction.f(snapshot.coordinates[0])
 
     def set_dHdq(self, dHdq, snapshot):
         x = snapshot.coordinates[0]

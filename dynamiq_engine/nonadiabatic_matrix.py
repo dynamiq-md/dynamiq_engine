@@ -16,10 +16,27 @@ class NonadiabaticMatrix(object):
         self.matrix = matrix
         self.dictionary = dct
         self.check_entries(dct.values())
+        self.set_runnable_entries()
+
 
     @staticmethod
     def check_entries(list_of_entries):
         pass # TODO: this should verify types
+
+
+    def set_runnable_entries(self):
+        # TODO: better name for this function? sets the "mask" of the
+        # _numeric_matrix
+        n_elec = self.n_electronic_states
+        self._numeric_matrix = np.zeros((n_elec, n_elec))
+        self.runnable_entries = {}
+        for key in self.dictionary.keys():
+            val = self.dictionary[key]
+            if not np.isscalar(val):
+                self.runnable_entries[key] = val
+            else:
+                self._numeric_matrix[key] = val
+
 
     @classmethod
     def from_dictionary(cls, dct, n_electronic_states=None):
@@ -41,11 +58,17 @@ class NonadiabaticMatrix(object):
             matrix.append(row_i)
                 
         res.matrix = matrix
+        res.set_runnable_entries()
         return res
+
 
     def __get_item__(self, label):
         return self.dictionary[label]
 
+
     def numeric_matrix(self, snap):
-        pass
+        matrix = self._numeric_matrix.copy()
+        for key in self.runnable_entries.keys():
+            matrix[key] = self.runnable_entries[key](snap)
+        return matrix
         
