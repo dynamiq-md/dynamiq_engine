@@ -47,4 +47,25 @@ class HarmonicOscillatorInteraction(PairwiseInteraction):
         return self.k
 
 
+class TanhInteraction(PairwiseInteraction):
+    pass
+
+class MorseInteraction(PairwiseInteraction):
+    pass
+
+class GaussianInteraction(PairwiseInteraction):
+    pass
+
+class LennardJonesInteraction(PairwiseInteraction):
+    pass
+
+class WCAInteraction(PairwiseInteraction):
+    pass
+
+class QuarticInteraction(PairwiseInteraction):
+    pass
+
+class GeneralizedWCAInteraction(PairwiseInteraction):
+    # arbitrary powers
+    pass
 
