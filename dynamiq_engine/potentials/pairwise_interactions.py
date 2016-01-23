@@ -1,3 +1,5 @@
+import numpy as np
+
 
 class PairwiseInteraction(object):
     def f(self, x):
