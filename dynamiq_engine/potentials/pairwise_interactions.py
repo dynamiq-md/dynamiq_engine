@@ -48,10 +48,42 @@ class HarmonicOscillatorInteraction(PairwiseInteraction):
 
 
 class TanhInteraction(PairwiseInteraction):
-    pass
+    def __init__(self, a, V0, R0=0.0):
+        self.a = a
+        self.V0 = V0
+        self.R0 = R0
+        # TODO: might be good to have a way to set position-dependent var
+        # (tanh_aR and sech_aR) as a first step of the integrator, avoiding
+        # repeated computation. Requires careful usage within the integrator
+
+    def f(self, x):
+        tanh_aR = np.tanh(self.a * (x-self.R0))
+        return self.V0 * tanh_aR
+
+    def dfdx(self, x):
+        sech_aR = 1.0 / np.cosh(self.a * (x - self.R0))
+        return self.V0*self.a*sech_aR*sech_aR
+
+    def d2fdx2(self, x):
+        sech_aR = 1.0 / np.cosh(self.a * (x - self.R0))
+        tanh_aR = np.tanh(self.a * (x-self.R0))
+        return -2.0 * self.V0 * self.a * self.a * sech_aR * sech_aR * tanh_aR
+
 
 class MorseInteraction(PairwiseInteraction):
-    pass
+    def __init__(self, D, beta, x0):
+        self.D = D
+        self.beta = beta
+        self.x0 = x0
+
+    def f(self, x):
+        pass
+
+    def dfdx(self, x):
+        pass
+
+    def d2fdx2(self, x):
+        pass
 
 class GaussianInteraction(PairwiseInteraction):
     pass
