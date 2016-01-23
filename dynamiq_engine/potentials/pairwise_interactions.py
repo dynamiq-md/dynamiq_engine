@@ -79,13 +79,22 @@ class MorseInteraction(PairwiseInteraction):
         self.x0 = x0
 
     def f(self, x):
-        pass
+        exp_mbetadx = np.exp(-self.beta * (x - self.x0))
+        return self.D * (1.0 - exp_mbetadx) * (1.0 - exp_mbetadx)
 
     def dfdx(self, x):
-        pass
+        exp_mbetadx = np.exp(-self.beta * (x - self.x0))
+        two_Db = 2*self.D*self.beta
+        return two_Db * (exp_mbetadx - exp_mbetadx * exp_mbetadx)
 
     def d2fdx2(self, x):
-        pass
+        exp_mbetadx = np.exp(-self.beta * (x - self.x0))
+        two_Db = 2*self.D*self.beta
+        return two_Db*self.beta * (2*exp_mbetadx*exp_mbetadx - exp_mbetadx)
+
+
+class QuarticInteraction(PairwiseInteraction):
+    pass
 
 class GaussianInteraction(PairwiseInteraction):
     pass
@@ -94,9 +103,6 @@ class LennardJonesInteraction(PairwiseInteraction):
     pass
 
 class WCAInteraction(PairwiseInteraction):
-    pass
-
-class QuarticInteraction(PairwiseInteraction):
     pass
 
 class GeneralizedWCAInteraction(PairwiseInteraction):

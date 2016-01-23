@@ -88,3 +88,36 @@ class testTanhInteraction(object):
         }
         check_function(self.tanh.d2fdx2, tests)
 
+class testMorseInteraction(object):
+    def setup(self):
+        self.morse = MorseInteraction(D=30.0, beta=0.08, x0=0.5)
+
+    def test_f(self):
+        tests = {
+            -1.0 : 0.487663414879601,
+            0.0 : 0.0499655787054630,
+            0.5 : 0.0,
+            5.0 : 2.74198811453729
+        }
+        check_function(self.morse.f, tests)
+        check_function(self.morse, tests)
+
+    def test_dfdx(self):
+        tests = {
+            -1.0 : -0.690011033961740,
+            0.0 : -0.203886208716337,
+            0.5 : 0.0,
+            5.0 : 1.01243553653309
+        }
+        check_function(self.morse.dfdx, tests)
+
+    def testd2fdx2(self):
+        tests = {
+            -1.0 : 0.543360556440359,
+            0.0 : 0.432293130684491,
+            0.5 : 0.384000000000000,
+            5.0 : 0.105918023365982
+        }
+        check_function(self.morse.d2fdx2, tests)
+
+
