@@ -120,4 +120,34 @@ class testMorseInteraction(object):
         }
         check_function(self.morse.d2fdx2, tests)
 
+class testQuarticInteraction(object):
+    def setup(self):
+        self.quartic = QuarticInteraction(1.5, 1.25, 2.0, 1.0, 0.25, 0.5)
 
+    def test_f(self):
+        tests = {
+            -1.0 : 6.625,
+            0.0 : 0.1875,
+            0.5 : 0.25,
+            2.0 : 18.0625
+        }
+        check_function(self.quartic.f, tests)
+        check_function(self.quartic, tests)
+
+    def test_dfdx(self):
+        tests = {
+            -1.0 : -16.8125,
+            0.0 : -0.8125,
+            0.5 : 1.0,
+            2.0 : 35.6875
+        }
+        check_function(self.quartic.dfdx, tests)
+
+    def test_d2fdx2(self):
+        tests = {
+            -1.0 : 33.25,
+            0.0 : 4.75,
+            0.5 : 4.0,
+            2.0 : 55.75
+        }
+        check_function(self.quartic.d2fdx2, tests)

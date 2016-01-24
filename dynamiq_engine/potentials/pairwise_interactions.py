@@ -94,7 +94,7 @@ class MorseInteraction(PairwiseInteraction):
 
 
 class QuarticInteraction(PairwiseInteraction):
-    def __init__(self, A, B, C, E0, x0):
+    def __init__(self, A, B, C, D, E0, x0):
         x0_2 = x0*x0
         x0_3 = x0_2 * x0
         x0_4 = x0_3 * x0
