@@ -1,15 +1,23 @@
+import dynamiq_engine as dynq
+from dynamiq_engine.potentials import PotentialEnergySurface
+import numpy as np
 
 class MMSTHamiltonian(PotentialEnergySurface):
-    """Meyer-Miller-Stock-Thoss mapped electron Hamiltonian
+    """Meyer-Miller-Stock-Thoss mapped electron Hamiltonian.
 
     Parameters
     ----------
-    H_matrix : matrix-like
-        The input Hamiltonian matrix. By "matrix-like", it is meant that it
-        must have the following properties
+    H_matrix : dynamiq_engine.NonadiabaticMatrix
+        The input Hamiltonian matrix. 
     """
 
-    def __init__(self, H_matrix):
+    def __init__(self, H_matrix, electronic_first=True):
+        self.H_matrix = H_matrix
+        self.n_electronic_states = H_matrix.n_electronic_states
+        self.electronic_first = electronic_first
+        pass
+
+    def nuclear_snapshot(self, snap):
         pass
 
     def H(self, snap):
