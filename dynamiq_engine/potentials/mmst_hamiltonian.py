@@ -17,9 +17,6 @@ class MMSTHamiltonian(PotentialEnergySurface):
         self.electronic_first = electronic_first
         pass
 
-    def nuclear_snapshot(self, snap):
-        pass
-
     def H(self, snap):
         pass
 
