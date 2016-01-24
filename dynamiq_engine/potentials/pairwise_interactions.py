@@ -94,7 +94,29 @@ class MorseInteraction(PairwiseInteraction):
 
 
 class QuarticInteraction(PairwiseInteraction):
-    pass
+    def __init__(self, A, B, C, E0, x0):
+        x0_2 = x0*x0
+        x0_3 = x0_2 * x0
+        x0_4 = x0_3 * x0
+        self.alpha = A
+        self.beta = -4*A*x0 + B
+        self.gamma = 6*A*x0_2 - 3*B*x0 + C
+        self.delta = -4*A*x0_3 +3*B*x0_2 - 2*C*x0 + D
+        self.epsilon = A*x0_4 - B*x0_3 + C*x0_2 - D*x0 + E0
+
+    def f(self, x):
+        x2 = x*x
+        return (self.alpha*x2*x2 + self.beta*x2*x + self.gamma*x2 +
+                self.delta*x + self.epsilon)
+
+    def dfdx(self, x):
+        x2 = x*x
+        return (4.0*self.alpha*x2*x + 3.0*self.beta*x2 + 2.0*self.gamma*x +
+                self.delta)
+
+    def d2fdx2(self, x):
+        x2 = x*x
+        return (12.0*self.alpha*x2 = 6.0*self.beta*x + 2.0*self.gamma)
 
 class GaussianInteraction(PairwiseInteraction):
     pass
