@@ -116,7 +116,7 @@ class QuarticInteraction(PairwiseInteraction):
 
     def d2fdx2(self, x):
         x2 = x*x
-        return (12.0*self.alpha*x2 = 6.0*self.beta*x + 2.0*self.gamma)
+        return (12.0*self.alpha*x2 + 6.0*self.beta*x + 2.0*self.gamma)
 
 class GaussianInteraction(PairwiseInteraction):
     pass
