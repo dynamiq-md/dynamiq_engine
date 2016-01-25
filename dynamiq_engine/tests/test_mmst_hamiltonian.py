@@ -9,6 +9,7 @@ class testMMSTHamiltonian(object):
     def setup(self):
         tully_V11 = pes.interactions.TanhInteraction(a=1.6, V0=0.1)
         tully_V22 = pes.interactions.TanhInteraction(a=1.6, V0=-0.1)
+        tully_V12 = pes.interactions.GaussianInteraction(A=0.05, alpha=1.0)
         pass
 
     def test_H(self):
