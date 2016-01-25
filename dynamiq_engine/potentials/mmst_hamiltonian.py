@@ -23,10 +23,16 @@ class MMSTHamiltonian(PotentialEnergySurface):
     def V(self, snap):
         pass
     
-    def dHdq(self, snap):
+    def set_electronic_dHdq(self, electronic_dHdq, snapshot):
         pass
 
-    def dHdp(self, snap):
+    def set_dHdq(self, dHdq, snapshot):
+        pass
+
+    def set_electronic_dHdp(self, electronic_dHdq, snapshot):
+        pass
+
+    def set_dHdp(self, dHdq, snapshot):
         pass
 
     # following are to be done later
