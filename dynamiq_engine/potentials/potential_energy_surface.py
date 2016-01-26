@@ -9,7 +9,7 @@ class PotentialEnergySurface(object):
         Level required to simulate the system
     """
     def H(self, snapshot):
-        raise NotImplementedError("Using generic PES object")
+        return self.V(snapshot) + self.kinetic_energy(snapshot)
 
     def V(self, snapshot):
         raise NotImplementedError("Using generic PES object")
@@ -34,6 +34,7 @@ class PotentialEnergySurface(object):
         return dHdp
 
     def set_dHdp(self, dHdp, snapshot):
+        np.copyto(snapshot.velocities, dHdp)
         raise NotImplementedError("Using generic PES object")
 
     def d2Hdq2(self, snapshot):

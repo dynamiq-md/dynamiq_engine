@@ -23,6 +23,8 @@ class NonadiabaticMatrix(object):
     def check_entries(list_of_entries):
         pass # TODO: this should verify types
 
+    def keys(self):
+        return self.dictionary.keys()
 
     def set_runnable_entries(self):
         # TODO: better name for this function? sets the "mask" of the
