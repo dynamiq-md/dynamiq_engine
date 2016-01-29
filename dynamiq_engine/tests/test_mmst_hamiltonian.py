@@ -75,9 +75,26 @@ class testMMSTHamiltonian(object):
         assert_array_almost_equal(self.tully.dHdp(self.tully_snap), 
                                   np.array([19.0/1980.0]))
 
-    def test_electonic_dHdq(self):
-        pass
+    def test_electronic_dHdq(self):
+        # dHdx1 = V11*x1 + V12*x2
+        #       = 0.0158648504297499 * 0.7 + 0.0495024916874584 * 0.6
+        #       = 0.0408068903133000
+        # dHdx2 = V22*x2 + V12*x1
+        #       = -0.0158648504297499 * 0.6 + 0.0495024916874584 * 0.7
+        #       = 0.0251328339233709
+        assert_array_almost_equal(self.tully.electronic_dHdq(self.tully_snap),
+                                  np.array([0.0408068903133000,
+                                            0.0251328339233709]))
 
-    def test_electonic_dHdp(self):
+    def test_electronic_dHdp(self):
+        # dHdp1 = V11*p1 + V12*p2
+        #       = 0.0158648504297499 * 0.2 + 0.0495024916874584 * 0.1
+        #       = 0.00812321925469582
+        # dHdp2 = V22*p2 + V12*p1
+        #       = -0.0158648504297499 * 0.1 + 0.0495024916874584 * 0.2
+        #       = 0.00831401329451669
+        assert_array_almost_equal(self.tully.electronic_dHdp(self.tully_snap),
+                                  np.array([0.00812321925469582,
+                                            0.00831401329451669]))
         pass
 
