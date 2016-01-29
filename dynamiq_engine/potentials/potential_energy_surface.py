@@ -56,10 +56,6 @@ class OneDimensionalInteractionModel(PotentialEnergySurface):
         self.dynamics_level = 0
         self.interaction = interaction
 
-    def H(self, snapshot):
-        x = snapshot.coordinates[0]
-        return self.kinetic_energy(snapshot) + self.interaction.f(x)
-
     def V(self, snapshot):
         return self.interaction.f(snapshot.coordinates[0])
 
