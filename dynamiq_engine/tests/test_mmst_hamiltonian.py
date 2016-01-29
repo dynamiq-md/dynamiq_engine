@@ -21,7 +21,7 @@ class testMMSTHamiltonian(object):
         self.tully = MMSTHamiltonian(tully_matrix)
         tully_topology = dynq.Topology(
             masses=np.array([1980.0]),
-            potential=tully_V11 #TODO: don't pick an arbitrary one...
+            potential=self.tully
         )
 
         self.tully_snap = dynq.MMSTSnapshot(
@@ -36,10 +36,24 @@ class testMMSTHamiltonian(object):
         #                       = 0.0495024916874584
         # tully_V22(tully_snap) = -0.0158648504297499
 
-        #four_state_matrix = dynq.NonadiabaticMatrix()
-        #four_state = MMSTHamiltonian(four_state_matrix)
-        #four_state_snap = 
-        pass
+        four_state_matrix = dynq.NonadiabaticMatrix(
+            [[0.00, 1.00, 0.75, 0.00],
+             [1.00, 1.50, 0.00, 1.50],
+             [0.75, 0.00, 0.50, 2.00],
+             [0.00, 1.50, 2.00, -1.0]]
+        )
+        self.four_state = MMSTHamiltonian(four_state_matrix)
+        four_state_topology = dynq.Topology(
+            masses=[],
+            potential=self.four_state
+        )
+        self.four_state_snap = dynq.MMSTSnapshot(
+            coordinates=[],
+            momenta=[],
+            electronic_coordinates=np.array([0.5, 0.6, 0.7, 0.8]),
+            electronic_momenta=np.array([0.1, 0.2, 0.3, 0.4]),
+            topology=four_state_topology
+        )
 
     def test_elect_cache(self):
         tully_elect = self.tully._elect_cache(self.tully_snap)
@@ -51,6 +65,26 @@ class testMMSTHamiltonian(object):
         assert_almost_equal(tully_elect[(0,1)], 0.44)
         if (1,0) in tully_elect.keys():
             raise AssertionError("Unexpected key in MMSTHamiltonian._elect")
+
+        four_state_elect = self.four_state._elect_cache(self.four_state_snap)
+        # four_state_elect[(0,0)] == 0.5*(0.5^2 + 0.1^2 - 1.0) = -0.37
+        # four_state_elect[(0,1)] == 0.5*0.6 + 0.1*0.2 = 0.32
+        # four_state_elect[(0,2)] == 0.5*0.7 + 0.1*0.3 = 0.38
+        # four_state_elect[(0,3)] == 0.5*0.8 + 0.1*0.4 = 0.44
+        # four_state_elect[(1,1)] == 0.5*(0.6^2 + 0.2^2 - 1.0) = -0.3
+        # four_state_elect[(1,2)] == 0.6*0.7 + 0.2*0.3 = 0.48
+        # four_state_elect[(1,3)] == 0.6*0.8 + 0.2*0.4 = 0.56
+        # four_state_elect[(2,2)] == 0.5*(0.7^2 + 0.3^2 - 1.0) = -0.21
+        # four_state_elect[(2,3)] == 0.7*0.8 + 0.3*0.4 = 0.68
+        # four_state_elect[(3,3)] == 0.5*(0.8^2 + 0.4^2 - 1.0) = -0.1
+        expected_elect = {(0,0) : -0.37, (0,1) : 0.32, (0,2) : 0.38, 
+                          (0,3) : 0.44, (1,1) : -0.3, (1,2) : 0.48, 
+                          (1,3) : 0.56, (2,2) : -0.21, (2,3) : 0.68, 
+                          (3,3) : -0.1}
+        assert_equal(set(four_state_elect.keys()), set(expected_elect.keys()))
+        for k in four_state_elect.keys():
+            assert_almost_equal(four_state_elect[k], expected_elect[k])
+
 
     def test_V(self):
         # V =  -0.235 * 0.0158648504297499 # V11

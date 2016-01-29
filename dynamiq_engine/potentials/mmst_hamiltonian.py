@@ -17,8 +17,16 @@ class MMSTHamiltonian(PotentialEnergySurface):
         self.electronic_first = electronic_first
 
         runnables = self.H_matrix.runnable_entries.values()
-        self.n_spatial = runnables[0].n_spatial
-        self.n_atoms = runnables[0].n_atoms
+        try:
+            runnable_0 = runnables[0]
+        except IndexError:
+            # can this work?
+            self.n_spatial = 0
+            self.n_atoms = 0
+        else:
+            self.n_spatial = runnables[0].n_spatial
+            self.n_atoms = runnables[0].n_atoms
+
         err_str = " not the same in all nonadiabatic matrix entries."
         for runnable in runnables:
             assert runnable.n_spatial == self.n_spatial, "n_spatial" + err_str
