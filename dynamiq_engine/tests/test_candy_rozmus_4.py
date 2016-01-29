@@ -80,8 +80,40 @@ class testCandyRozmus4MMST(testCandyRozmus4):
             potential=self.tully
         )
 
-        self.integ = CandyRozmus4MMST(0.01, self.tully)
+        self.tully_integ = CandyRozmus4MMST(1.0, self.tully)
+
+        uncoupled_matrix = dynq.NonadiabaticMatrix([[2.0, 0.0], [0.0, 3.0]])
+        self.uncoupled = dynq.potentials.MMSTHamiltonian(uncoupled_matrix)
+
+        rabi_matrix = dynq.NonadiabaticMatrix([[2.0, 1.0], [1.0, 3.0]])
+        self.rabi = dynq.potentials.MMSTHamiltonian(rabi_matrix)
+        rabi_topology = dynq.Topology(masses=[], potential=self.rabi)
+        self.rabi_snapshot = dynq.MMSTSnapshot(
+            coordinates=[], momenta=[],
+            electronic_coordinates=np.array([1.0, 0.0]),
+            electronic_momenta=np.array([0.0, 1.0]),
+            topology=rabi_topology
+        )
+        self.rabi_integ = CandyRozmus4MMST(0.1, self.rabi)
+
         pass
 
     def test_cr4_step(self):
+        # test uncoupled
+        uncoupled_topology = dynq.Topology(masses=[], potential=self.uncoupled)
+        uncoupled_snap = dynq.MMSTSnapshot(
+            coordinates=np.array([]), momenta=np.array([]),
+            electronic_coordinates=np.array([1.0, 0.0]),
+            electronic_momenta=np.array([0.0, 1.0]),
+            topology=uncoupled_topology
+        )
+        uncoupled_integ = CandyRozmus4MMST(0.1, self.uncoupled)
+        for i in range(10):
+            uncoupled_integ.step(self.uncoupled, uncoupled_snap,
+                                 uncoupled_snap)
+
+
+        # test Rabi
+
+        # test Tully
         raise SkipTest
