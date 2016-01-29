@@ -47,14 +47,15 @@ class MMSTHamiltonian(PotentialEnergySurface):
         energy. V_{eff} is everything else.
         """
         elect = self._elect_cache(snapshot)
-        V_ij = self.H_matrix.numeric(snapshot)
+        V_ij = self.H_matrix.numeric_matrix(snapshot)
        
+        print self.H_matrix.keys()
         V = sum([elect[key] * V_ij[key] for key in self.H_matrix.keys()])
         return V
 
     
     def set_electronic_dHdq(self, electronic_dHdq, snapshot):
-        V_ij = self.H_matrix.numeric(snapshot)
+        V_ij = self.H_matrix.numeric_matrix(snapshot)
 
         for i in range(self.n_electronic_states):
             electronic_dHdq[i] = sum(
@@ -74,7 +75,7 @@ class MMSTHamiltonian(PotentialEnergySurface):
 
 
     def set_electronic_dHdp(self, electronic_dHdp, snapshot):
-        V_ij = self.H_matrix.numeric(snapshot)
+        V_ij = self.H_matrix.numeric_matrix(snapshot)
 
         for i in range(self.n_electronic_states):
             electronic_dHdp[i] = sum(
