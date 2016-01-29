@@ -15,7 +15,14 @@ class MMSTHamiltonian(PotentialEnergySurface):
         self.H_matrix = H_matrix
         self.n_electronic_states = H_matrix.n_electronic_states
         self.electronic_first = electronic_first
-        pass
+
+        runnables = self.H_matrix.runnable_entries.values()
+        self.n_spatial = runnables[0].n_spatial
+        self.n_atoms = runnables[0].n_atoms
+        err_str = " not the same in all nonadiabatic matrix entries."
+        for runnable in runnables:
+            assert runnable.n_spatial == self.n_spatial, "n_spatial" + err_str
+            assert runnable.n_atoms == self.n_atoms, "n_atoms" + err_str
 
 
     def _elect_cache(self, snap):
@@ -49,7 +56,6 @@ class MMSTHamiltonian(PotentialEnergySurface):
         elect = self._elect_cache(snapshot)
         V_ij = self.H_matrix.numeric_matrix(snapshot)
        
-        print self.H_matrix.keys()
         V = sum([elect[key] * V_ij[key] for key in self.H_matrix.keys()])
         return V
 
@@ -67,8 +73,11 @@ class MMSTHamiltonian(PotentialEnergySurface):
         elect = self._elect_cache(snapshot)
         dHdq.fill(0.0)
         self._part_dHdq = np.zeros_like(dHdq)
+        runnable_keys = [(i,j) 
+                         for (i,j) in self.H_matrix.runnable_entries.keys() 
+                         if i<=j] # upper triangular version
 
-        for key in self.H_matrix.runnable_entries.keys():
+        for key in runnable_keys:
             self.H_matrix.runnable_entries[key].set_dHdq(self._part_dHdq,
                                                          snapshot)
             np.add(self._part_dHdq * elect[key], dHdq, dHdq)
@@ -82,6 +91,16 @@ class MMSTHamiltonian(PotentialEnergySurface):
                 [snapshot.electronic_momenta[j] * V_ij[(i,j)]
                  for j in range(self.n_electronic_states)]
             )
+
+    def electronic_dHdp(self, snapshot):
+        e_dHdp = np.zeros(self.n_electronic_states)
+        self.set_electronic_dHdp(e_dHdp, snapshot)
+        return e_dHdp
+
+    def electronic_dHdq(self, snapshot):
+        e_dHdq = np.zeros(self.n_electronic_states)
+        self.set_electronic_dHdq(e_dHdq, snapshot)
+        return e_dHdq
 
     # dHdp (for nuclear only) is still the same
 

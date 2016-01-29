@@ -20,7 +20,7 @@ class testMMSTHamiltonian(object):
                                                 [tully_V12, tully_V22]])
         self.tully = MMSTHamiltonian(tully_matrix)
         tully_topology = dynq.Topology(
-            masses=np.array([1.0]),
+            masses=np.array([1980.0]),
             potential=tully_V11 #TODO: don't pick an arbitrary one...
         )
 
@@ -59,15 +59,25 @@ class testMMSTHamiltonian(object):
         #   = 0.0230502843768617
         assert_almost_equal(self.tully.V(self.tully_snap), 0.0230502843768617)
 
-    def test_set_dHdq(self):
+    def test_dHdq(self):
+        # dV11dx = 0.155972904333467
+        # dV22dx = -0.155972904333467
+        # dV12dx = -0.00990049833749168
+        # dHdq =  dV11dx*elect_11 + dV22dx*elect_22 + dV12dx*elect_12
+        #      =   0.155972904333467 * -0.235
+        #        -0.155972904333467 * -0.315
+        #        -0.00990049833749168 * 0.44
+        #      = 0.00812161307818102
+        assert_array_almost_equal(self.tully.dHdq(self.tully_snap),
+                                  0.00812161307818102)
+
+    def test_dHdp(self):
+        assert_array_almost_equal(self.tully.dHdp(self.tully_snap), 
+                                  np.array([19.0/1980.0]))
+
+    def test_electonic_dHdq(self):
         pass
 
-    def test_set_dHdp(self):
-        pass
-
-    def test_set_electonic_dHdq(self):
-        pass
-
-    def test_set_electonic_dHdp(self):
+    def test_electonic_dHdp(self):
         pass
 

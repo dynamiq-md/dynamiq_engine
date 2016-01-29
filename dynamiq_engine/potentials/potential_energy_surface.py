@@ -34,8 +34,7 @@ class PotentialEnergySurface(object):
         return dHdp
 
     def set_dHdp(self, dHdp, snapshot):
-        np.copyto(snapshot.velocities, dHdp)
-        raise NotImplementedError("Using generic PES object")
+        np.copyto(dHdp, snapshot.velocities)
 
     def d2Hdq2(self, snapshot):
         raise NotImplementedError("Using generic PES object")
