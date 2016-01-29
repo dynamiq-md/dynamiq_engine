@@ -51,10 +51,10 @@ class CandyRozmus4(Integrator):
         # wrap PBCs if necessary
 
 class CandyRozmus4MMST(CandyRozmus4):
-    def __init__(dt, potential, n_frames=1):
+    def __init__(self, dt, potential, n_frames=1):
         super(CandyRozmus4MMST, self).__init__(dt, potential, n_frames)
-        self.local_electronic_dHdp = np.zeros(potential.n_electronic)
-        self.local_electronic_dHdq = np.zeros(potential.n_electronic)
+        self.local_electronic_dHdp = np.zeros(potential.n_electronic_states)
+        self.local_electronic_dHdq = np.zeros(potential.n_electronic_states)
     
     def position_update(self, potential, snap, k):
         potential.set_dHdp(self.local_dHdp, snap)

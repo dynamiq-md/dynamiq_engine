@@ -3,6 +3,7 @@ import numpy as np
 from tools import *
 
 from dynamiq_engine.integrators.candy_rozmus_4 import *
+import dynamiq_engine.potentials as pes
 
 class testCandyRozmus4(object):
     def setup(self):
@@ -59,3 +60,28 @@ class testCandyRozmus4(object):
         exact_0x10 = self.exact_ho(snap1, 0.10)
         assert_array_almost_equal(new_snap.coordinates, exact_0x10['q'])
         assert_array_almost_equal(new_snap.momenta, exact_0x10['p'])
+
+class testCandyRozmus4MMST(testCandyRozmus4):
+    def setup(self):
+        tully_V11 = pes.OneDimensionalInteractionModel(
+            pes.interactions.TanhInteraction(a=1.6, V0=0.1)
+        )
+        tully_V22 = pes.OneDimensionalInteractionModel(
+            pes.interactions.TanhInteraction(a=1.6, V0=-0.1)
+        )
+        tully_V12 = pes.OneDimensionalInteractionModel(
+            pes.interactions.GaussianInteraction(A=0.05, alpha=1.0)
+        )
+        tully_matrix = dynq.NonadiabaticMatrix([[tully_V11, tully_V12],
+                                                [tully_V12, tully_V22]])
+        self.tully = dynq.potentials.MMSTHamiltonian(tully_matrix)
+        tully_topology = dynq.Topology(
+            masses=np.array([1980.0]),
+            potential=self.tully
+        )
+
+        self.integ = CandyRozmus4MMST(0.01, self.tully)
+        pass
+
+    def test_cr4_step(self):
+        raise SkipTest
