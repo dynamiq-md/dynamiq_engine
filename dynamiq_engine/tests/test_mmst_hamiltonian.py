@@ -131,6 +131,14 @@ class testMMSTHamiltonian(object):
         assert_array_almost_equal(self.tully.electronic_dHdq(self.tully_snap),
                                   np.array([0.0408068903133000,
                                             0.0251328339233709]))
+        # dHdx0 = 0.00*0.5 + 1.00*0.6 + 0.75*0.7 + 0.00*0.8 = 1.125
+        # dHdx1 = 1.00*0.5 + 1.50*0.6 + 0.00*0.7 + 1.50*0.8 = 2.60
+        # dHdx2 = 0.75*0.5 + 0.00*0.6 + 0.50*0.7 + 2.00*0.8 = 2.325
+        # dHdx3 = 0.00*0.5 + 1.50*0.6 + 2.00*0.7 + -1.0*0.8 = 1.5
+        assert_array_almost_equal(
+            self.four_state.electronic_dHdq(self.four_state_snap),
+            np.array([1.125, 2.6, 2.325, 1.5])
+        )
 
     def test_electronic_dHdp(self):
         # dHdp1 = V11*p1 + V12*p2
@@ -142,5 +150,13 @@ class testMMSTHamiltonian(object):
         assert_array_almost_equal(self.tully.electronic_dHdp(self.tully_snap),
                                   np.array([0.00812321925469582,
                                             0.00831401329451669]))
-        pass
+        # dHdp0 = 0.00*0.1 + 1.00*0.2 + 0.75*0.3 + 0.00*0.4 = 0.425
+        # dHdp1 = 1.00*0.1 + 1.50*0.2 + 0.00*0.3 + 1.50*0.4 = 1.0
+        # dHdp2 = 0.75*0.1 + 0.00*0.2 + 0.50*0.3 + 2.00*0.4 = 1.025
+        # dHdp3 = 0.00*0.1 + 1.50*0.2 + 2.00*0.3 + -1.0*0.4 = 0.5
+        assert_array_almost_equal(
+            self.four_state.electronic_dHdp(self.four_state_snap),
+            np.array([0.425, 1.0, 1.025, 0.5])
+        )
+
 
