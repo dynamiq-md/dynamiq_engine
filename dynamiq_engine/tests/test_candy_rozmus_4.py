@@ -25,14 +25,16 @@ class testCandyRozmus4(object):
         omega = np.sqrt(self.ho.k / m)
         x0 = self.ho.x0
         p0 = initial_snap.momenta[0]
-        q0 = initial_snap.coordinates[0] - x0
-        cos_wt = np.cos(omega*time)
-        sin_wt = np.sin(omega*time)
-        state_at_t = {
-            'q' : np.array([q0*cos_wt + p0/m/omega*sin_wt + x0]),
-            'p' : np.array([p0*cos_wt - q0*m*omega*sin_wt])
-        }
-        return state_at_t
+        q0 = initial_snap.coordinates[0]
+        return exact_ho(omega, m, p0, q0, x0, time)
+
+        #cos_wt = np.cos(omega*time)
+        #sin_wt = np.sin(omega*time)
+        #state_at_t = {
+            #'q' : np.array([q0*cos_wt + p0/m/omega*sin_wt + x0]),
+            #'p' : np.array([p0*cos_wt - q0*m*omega*sin_wt])
+        #}
+        #return state_at_t
 
     def test_cr4_step(self):
         new_snap = dynq.Snapshot(coordinates=np.array([0.0]),
@@ -103,8 +105,8 @@ class testCandyRozmus4MMST(testCandyRozmus4):
         uncoupled_topology = dynq.Topology(masses=[], potential=self.uncoupled)
         uncoupled_snap = dynq.MMSTSnapshot(
             coordinates=np.array([]), momenta=np.array([]),
-            electronic_coordinates=np.array([1.0, 0.0]),
-            electronic_momenta=np.array([0.0, 1.0]),
+            electronic_coordinates=np.array([1.0, 1.0]),
+            electronic_momenta=np.array([1.0, 1.0]),
             topology=uncoupled_topology
         )
         uncoupled_integ = CandyRozmus4MMST(0.1, self.uncoupled)
@@ -112,6 +114,14 @@ class testCandyRozmus4MMST(testCandyRozmus4):
             uncoupled_integ.step(self.uncoupled, uncoupled_snap,
                                  uncoupled_snap)
 
+        exact_1 = exact_ho(time=1.0, omega=2.0, m=1.0, q0=1.0, p0=1.0)
+        exact_2 = exact_ho(time=1.0, omega=3.0, m=1.0, q0=1.0, p0=1.0)
+        predicted_coordinates = [exact_1['q'][0], exact_2['q'][0]]
+        predicted_momenta = [exact_1['p'][0], exact_2['p'][0]]
+        print predicted_momenta, predicted_coordinates
+        print uncoupled_snap.electronic_momenta, uncoupled_snap.electronic_coordinates
+        #assert_array_almost_equal(uncoupled_snap.electronic_coordinates,
+                                  #np.array(predicted_coordinates))
 
         # test Rabi
 
