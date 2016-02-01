@@ -101,6 +101,7 @@ class testCandyRozmus4MMST(testCandyRozmus4):
         pass
 
     def test_cr4_step(self):
+        from math import sqrt
         # test uncoupled
         uncoupled_topology = dynq.Topology(masses=[], potential=self.uncoupled)
         uncoupled_snap = dynq.MMSTSnapshot(
@@ -109,19 +110,19 @@ class testCandyRozmus4MMST(testCandyRozmus4):
             electronic_momenta=np.array([1.0, 1.0]),
             topology=uncoupled_topology
         )
-        uncoupled_integ = CandyRozmus4MMST(0.1, self.uncoupled)
+        uncoupled_integ = CandyRozmus4MMST(0.01, self.uncoupled)
         for i in range(10):
             uncoupled_integ.step(self.uncoupled, uncoupled_snap,
                                  uncoupled_snap)
 
-        exact_1 = exact_ho(time=1.0, omega=2.0, m=1.0, q0=1.0, p0=1.0)
-        exact_2 = exact_ho(time=1.0, omega=3.0, m=1.0, q0=1.0, p0=1.0)
+        exact_1 = exact_ho(time=0.1, omega=2.0, m=1.0/2.0, q0=1.0, p0=1.0)
+        exact_2 = exact_ho(time=0.1, omega=3.0, m=1.0/3.0, q0=1.0, p0=1.0)
         predicted_coordinates = [exact_1['q'][0], exact_2['q'][0]]
         predicted_momenta = [exact_1['p'][0], exact_2['p'][0]]
-        print predicted_momenta, predicted_coordinates
-        print uncoupled_snap.electronic_momenta, uncoupled_snap.electronic_coordinates
-        #assert_array_almost_equal(uncoupled_snap.electronic_coordinates,
-                                  #np.array(predicted_coordinates))
+        assert_array_almost_equal(uncoupled_snap.electronic_coordinates,
+                                  np.array(predicted_coordinates))
+        assert_array_almost_equal(uncoupled_snap.electronic_momenta,
+                                  np.array(predicted_momenta))
 
         # test Rabi
 
