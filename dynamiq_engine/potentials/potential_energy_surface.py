@@ -9,7 +9,7 @@ class PotentialEnergySurface(object):
         Level required to simulate the system
     """
     def H(self, snapshot):
-        raise NotImplementedError("Using generic PES object")
+        return self.V(snapshot) + self.kinetic_energy(snapshot)
 
     def V(self, snapshot):
         raise NotImplementedError("Using generic PES object")
@@ -34,7 +34,7 @@ class PotentialEnergySurface(object):
         return dHdp
 
     def set_dHdp(self, dHdp, snapshot):
-        raise NotImplementedError("Using generic PES object")
+        np.copyto(dHdp, snapshot.velocities)
 
     def d2Hdq2(self, snapshot):
         raise NotImplementedError("Using generic PES object")
@@ -55,10 +55,6 @@ class OneDimensionalInteractionModel(PotentialEnergySurface):
         self.n_spatial = 1
         self.dynamics_level = 0
         self.interaction = interaction
-
-    def H(self, snapshot):
-        x = snapshot.coordinates[0]
-        return self.kinetic_energy(snapshot) + self.interaction.f(x)
 
     def V(self, snapshot):
         return self.interaction.f(snapshot.coordinates[0])

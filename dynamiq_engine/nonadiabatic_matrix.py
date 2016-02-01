@@ -23,6 +23,9 @@ class NonadiabaticMatrix(object):
     def check_entries(list_of_entries):
         pass # TODO: this should verify types
 
+    def keys(self):
+        """Keys, assuming we have an upper triangular matrix"""
+        return [(i,j) for (i,j) in self.dictionary.keys() if i<=j]
 
     def set_runnable_entries(self):
         # TODO: better name for this function? sets the "mask" of the
