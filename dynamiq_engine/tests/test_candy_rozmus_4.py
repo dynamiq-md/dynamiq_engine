@@ -26,7 +26,7 @@ class testCandyRozmus4(object):
         x0 = self.ho.x0
         p0 = initial_snap.momenta[0]
         q0 = initial_snap.coordinates[0]
-        return exact_ho(omega, m, p0, q0, x0, time)
+        return exact_ho(time, omega, m, p0, q0, x0)
 
         #cos_wt = np.cos(omega*time)
         #sin_wt = np.sin(omega*time)
@@ -63,7 +63,7 @@ class testCandyRozmus4(object):
         assert_array_almost_equal(new_snap.coordinates, exact_0x10['q'])
         assert_array_almost_equal(new_snap.momenta, exact_0x10['p'])
 
-class testCandyRozmus4MMST(testCandyRozmus4):
+class testCandyRozmus4MMST(object):
     def setup(self):
         tully_V11 = pes.OneDimensionalInteractionModel(
             pes.interactions.TanhInteraction(a=1.6, V0=0.1)
@@ -89,14 +89,6 @@ class testCandyRozmus4MMST(testCandyRozmus4):
 
         rabi_matrix = dynq.NonadiabaticMatrix([[2.0, 1.0], [1.0, 3.0]])
         self.rabi = dynq.potentials.MMSTHamiltonian(rabi_matrix)
-        rabi_topology = dynq.Topology(masses=[], potential=self.rabi)
-        self.rabi_snapshot = dynq.MMSTSnapshot(
-            coordinates=[], momenta=[],
-            electronic_coordinates=np.array([1.0, 0.0]),
-            electronic_momenta=np.array([0.0, 1.0]),
-            topology=rabi_topology
-        )
-        self.rabi_integ = CandyRozmus4MMST(0.1, self.rabi)
 
         pass
 
@@ -125,6 +117,19 @@ class testCandyRozmus4MMST(testCandyRozmus4):
                                   np.array(predicted_momenta))
 
         # test Rabi
+        #rabi_topology = dynq.Topology(masses=[], potential=self.rabi)
+        #rabi_snapshot = dynq.MMSTSnapshot(
+            #coordinates=np.array([]), momenta=np.array([]),
+            #electronic_coordinates=np.array([1.0, 0.0]),
+            #electronic_momenta=np.array([0.0, 1.0]),
+            #topology=rabi_topology
+        #)
+        #rabi_integ = CandyRozmus4MMST(0.01, self.rabi)
+        #for i in range(10):
+            #rabi_integ.step(self.rabi, rabi_snapshot, rabi_snapshot)
+
+        # TODO: test results
+
 
         # test Tully
         raise SkipTest
