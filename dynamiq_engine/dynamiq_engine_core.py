@@ -82,6 +82,22 @@ class MMSTSnapshot(Snapshot):
         self.electronic_coordinates = electronic_coordinates
         self.electronic_momenta = electronic_momenta
 
+    def copy(self):
+        new_snap = MMSTSnapshot(
+            coordinates=self.coordinates.copy(), 
+            momenta=self.momenta.copy(), 
+            electronic_coordinates=self.eletronic_coordinates.copy(), 
+            electronic_momenta=self.electronic_momenta.copy(), 
+            is_reversed=self.is_reversed,
+            topology=self.topology
+        )
+        return new_snap
+
+    def copy_from(self, other):
+        super(MMSTSnapshot, self).copy_from(other)
+        np.copyto(self.electronic_coordinates, other.electronic_coordinates)
+        np.copyto(self.electronic_momenta, other.electronic_momenta)
+
 
 class Topology(paths.Topology):
     def __init__(self, masses, potential):
