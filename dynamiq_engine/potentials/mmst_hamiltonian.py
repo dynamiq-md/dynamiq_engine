@@ -113,6 +113,10 @@ class MMSTHamiltonian(PotentialEnergySurface):
     # dHdp (for nuclear only) is still the same
 
     # following are to be done later
+    def T(self, snap):
+        """ T = L + V, such that L = T - V"""
+        pass
+
     def L(self, snap):
         pass
 

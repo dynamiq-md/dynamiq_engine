@@ -29,6 +29,12 @@ class CandyRozmus4(Integrator):
         self.local_dHdq = np.zeros(n_spatial * n_atoms)
         self.local_dHdp = np.zeros(n_spatial * n_atoms)
 
+    def prepare(self, feature_list):
+        pass
+
+    def reset(self):
+        pass
+
     def momentum_update(self, potential, snap, k):
         potential.set_dHdq(self.local_dHdq, snap)
         self.local_dHdq *= self._b_k[k]
@@ -39,8 +45,9 @@ class CandyRozmus4(Integrator):
         self.local_dHdp *=  self._a_k[k]
         np.add(snap.coordinates, self.local_dHdp, snap.coordinates)
 
-    def action_step(self, potential, old_snap, new_snap, k):
-        pass
+    def action_step(self, potential, snap, new_snap, k):
+        self.localS += self._a_k[k]*potential.T(snap) 
+        self.localS -= self._b_k[k]*potential.V(snap)
 
     def step(self, potential, old_snap, new_snap):
         new_snap.copy_from(old_snap)

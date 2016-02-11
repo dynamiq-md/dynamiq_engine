@@ -20,6 +20,10 @@ class PotentialEnergySurface(object):
     def kinetic_energy(self, snapshot):
         return 0.5*np.dot(snapshot.velocities, snapshot.momenta)
 
+    def T(self, snapshot):
+        """T = L + V; such that L = T - V; for generic action integration"""
+        return self.kinetic_energy(snapshot)
+
     def dHdq(self, snapshot):
         dHdq = np.zeros(self.n_spatial * self.n_atoms)
         self.set_dHdq(dHdq, snapshot)
