@@ -94,6 +94,11 @@ class MMSTSnapshot(Snapshot):
         )
         return new_snap
 
+    def copy_from(self, other):
+        super(MMSTSnapshot, self).copy_from(other)
+        np.copyto(self.electronic_coordinates, other.electronic_coordinates)
+        np.copyto(self.electronic_momenta, other.electronic_momenta)
+
 
 class Topology(paths.Topology):
     def __init__(self, masses, potential):
