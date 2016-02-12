@@ -90,6 +90,13 @@ class testCandyRozmus4MMST(object):
             topology=uncoupled_topology
         )
         uncoupled_integ = CandyRozmus4MMST(0.01, uncoupled)
+        import dynamiq_engine.features as dynq_f
+        import openpathsampling.features as paths_f
+        uncoupled_integ.prepare([paths_f.coordinates, dynq_f.momenta,
+                                 dynq_f.electronic_coordinates,
+                                 dynq_f.electronic_momenta,
+                                 dynq_f.action])
+
         for i in range(10):
             uncoupled_integ.step(uncoupled, uncoupled_snap, uncoupled_snap)
 
