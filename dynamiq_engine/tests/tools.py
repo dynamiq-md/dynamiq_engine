@@ -19,8 +19,10 @@ def check_function(function, dictionary):
 def exact_ho(time, omega, m, p0, q0, x0=0.0):
     cos_wt = np.cos(omega*time)
     sin_wt = np.sin(omega*time)
+    dq = q0-x0
     state_at_t = {
-        'q' : np.array([(q0-x0)*cos_wt + p0/m/omega*sin_wt + x0]),
-        'p' : np.array([p0*cos_wt - (q0-x0)*m*omega*sin_wt])
+        'q' : np.array([dq*cos_wt + p0/m/omega*sin_wt + x0]),
+        'p' : np.array([p0*cos_wt - dq*m*omega*sin_wt]),
+        'S' : 0.25*(p0*p0/m/omega - m*omega*dq*dq)*np.sin(2*omega*time)
     }
     return state_at_t

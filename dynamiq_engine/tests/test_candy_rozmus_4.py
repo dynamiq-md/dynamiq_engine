@@ -28,6 +28,9 @@ class testCandyRozmus4(object):
         q0 = initial_snap.coordinates[0]
         return exact_ho(time, omega, m, p0, q0, x0)
 
+    def test_prepare_bad_feature_error(self):
+        raise SkipTest
+    
     def test_cr4_step(self):
         from dynamiq_engine.features import momenta as f_momenta
         from openpathsampling.features import coordinates as f_coordinates
@@ -59,6 +62,21 @@ class testCandyRozmus4(object):
         assert_array_almost_equal(new_snap.momenta, exact_0x10['p'])
 
     def test_action(self):
+        import openpathsampling.features as paths_f
+        import dynamiq_engine.features as dynq_f
+        self.integ.prepare([paths_f.coordinates, dynq_f.momenta,
+                            dynq_f.action])
+        new_snap = dynq.Snapshot(coordinates=np.array([0.0]),
+                                 momenta=np.array([0.0]),
+                                 topology=self.topology)
+        self.integ.step(self.potential, self.snap0, new_snap)
+        for i in range(10):
+            self.integ.step(self.potential, new_snap, new_snap)
+            print new_snap.action
+        # TODO: test action is correct
+        exact = exact_ho(time=0.11, omega=1.0, m=1.0, q0=1.0, p0=0.0)
+        print new_snap.action, exact['S']
+
         raise SkipTest
 
 class testCandyRozmus4MMST(object):

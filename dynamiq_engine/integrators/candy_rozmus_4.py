@@ -33,6 +33,8 @@ class CandyRozmus4(Integrator):
         import dynamiq_engine.features as dynq_f
         import openpathsampling.features as paths_f
         self.feature_list = feature_list
+        # TODO: get another integrator to support electronic dofs; I don't
+        # think this one tehcnically should
         supported_features = [
             paths_f.coordinates,
             dynq_f.momenta,
@@ -69,8 +71,10 @@ class CandyRozmus4(Integrator):
             pre_position.append(self.electronic_position_calculate)
             post_position.append(self.electronic_position_update)
 
+
         if dynq_f.action in self.feature_list:
-            post_momentum.append(self.action_step)
+            post_momentum.append(self.action_update)
+            self.local_S = 0.0
 
         self.update_steps = (pre_step 
                              + pre_momentum + momentum + post_momentum 
@@ -78,6 +82,11 @@ class CandyRozmus4(Integrator):
                              + post_step)
 
     def reset(self):
+        import dynamiq_engine.features as dynq_f
+        import openpathsampling.features as paths_f
+
+        if dynq_f.action in self.feature_list:
+            self.local_S = 0.0
         pass
 
     def momentum_calculate(self, potential, snap, k):
@@ -111,18 +120,16 @@ class CandyRozmus4(Integrator):
                snap.electronic_coordinates)
 
 
-    def action_step(self, potential, snap, new_snap, k):
+    def action_update(self, potential, snap, k):
         self.local_S += self._a_k[k]*potential.T(snap) 
         self.local_S -= self._b_k[k]*potential.V(snap)
+        snap.action = self.local_S
 
     def step(self, potential, old_snap, new_snap):
         new_snap.copy_from(old_snap)
         for k in range(4):
             for update in self.update_steps:
                 update(potential, new_snap, k)
-            #self.momentum_update(potential, new_snap, k)
-            # TODO: monodromy and action
-            #self.position_update(potential, new_snap, k)
         # wrap PBCs if necessary
 
 class CandyRozmus4MMST(CandyRozmus4):
