@@ -69,15 +69,12 @@ class testCandyRozmus4(object):
         new_snap = dynq.Snapshot(coordinates=np.array([0.0]),
                                  momenta=np.array([0.0]),
                                  topology=self.topology)
-        self.integ.step(self.potential, self.snap0, new_snap)
+        exact = self.exact_ho(new_snap, 0.1)
+        self.integ.reset()
         for i in range(10):
             self.integ.step(self.potential, new_snap, new_snap)
-            print new_snap.action
         # TODO: test action is correct
-        exact = exact_ho(time=0.11, omega=1.0, m=1.0, q0=1.0, p0=0.0)
-        print new_snap.action, exact['S']
-
-        raise SkipTest
+        assert_almost_equal(new_snap.action, exact['S'])
 
 class testCandyRozmus4MMST(object):
     def test_step_uncoupled(self):
