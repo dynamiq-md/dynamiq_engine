@@ -28,15 +28,10 @@ class testCandyRozmus4(object):
         q0 = initial_snap.coordinates[0]
         return exact_ho(time, omega, m, p0, q0, x0)
 
-        #cos_wt = np.cos(omega*time)
-        #sin_wt = np.sin(omega*time)
-        #state_at_t = {
-            #'q' : np.array([q0*cos_wt + p0/m/omega*sin_wt + x0]),
-            #'p' : np.array([p0*cos_wt - q0*m*omega*sin_wt])
-        #}
-        #return state_at_t
-
     def test_cr4_step(self):
+        from dynamiq_engine.features import momenta as f_momenta
+        from openpathsampling.features import coordinates as f_coordinates
+        self.integ.prepare([f_coordinates, f_momenta])
         new_snap = dynq.Snapshot(coordinates=np.array([0.0]),
                                  momenta=np.array([0.0]),
                                  topology=self.topology)
@@ -62,6 +57,9 @@ class testCandyRozmus4(object):
         exact_0x10 = self.exact_ho(snap1, 0.10)
         assert_array_almost_equal(new_snap.coordinates, exact_0x10['q'])
         assert_array_almost_equal(new_snap.momenta, exact_0x10['p'])
+
+    def test_action(self):
+        raise SkipTest
 
 class testCandyRozmus4MMST(object):
     def test_step_uncoupled(self):
