@@ -162,10 +162,18 @@ class testCandyRozmus4MMST(object):
 
 
         tully_integ = CandyRozmus4MMST(1.0, tully)
+        import dynamiq_engine.features as dynq_f
+        import openpathsampling.features as paths_f
+        tully_integ.prepare([paths_f.coordinates, dynq_f.momenta,
+                             dynq_f.electronic_coordinates,
+                             dynq_f.electronic_momenta,
+                             dynq_f.action])
+
         tully_integ.step(tully, tully_snapshot, tully_snapshot)
 
         # NOTE: unverified -- these results are checked against the output
         # that they first gave, not against any analytical results
+        assert_not_equal(tully_snapshot.action, 0.0) # TODO: get tested val
         assert_array_almost_equal(tully_snapshot.coordinates,
                                   np.array([0.10959396]))
         assert_array_almost_equal(tully_snapshot.momenta,
