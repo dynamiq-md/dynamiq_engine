@@ -110,9 +110,8 @@ class MMSTHamiltonian(PotentialEnergySurface):
         self.set_electronic_dHdq(e_dHdq, snapshot)
         return e_dHdq
 
-    # dHdp (for nuclear only) is still the same
+    # dHdp (for nuclear only) is still the same as standard
 
-    # following are to be done later
     def T(self, snapshot):
         """ T = L + V, such that L = T - V
         
@@ -125,15 +124,12 @@ class MMSTHamiltonian(PotentialEnergySurface):
         T = self.kinetic_energy(snapshot)
         for i in range(self.n_electronic_states):
             p_i = snapshot.electronic_momenta[i]
-            T += V_ij[(i,i)]
+            T += V_ij[(i,i)] * p_i * p_i
             for j in range(i+1, self.n_electronic_states):
                 p_j = snapshot.electronic_momenta[j]
-                T = 2 * V_ij[(i,j)] * p_i * p_j
+                T += 2 * V_ij[(i,j)] * p_i * p_j
 
         return T
-
-    def L(self, snap):
-        pass
 
     def d2Hdq2(self, snap):
         pass
