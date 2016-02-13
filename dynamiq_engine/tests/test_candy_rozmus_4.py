@@ -28,8 +28,10 @@ class testCandyRozmus4(object):
         q0 = initial_snap.coordinates[0]
         return exact_ho(time, omega, m, p0, q0, x0)
 
+    @raises(RuntimeError)
     def test_prepare_bad_feature_error(self):
-        raise SkipTest
+        import openpathsampling.features as paths_f
+        self.integ.prepare([paths_f.coordinates, paths_f.configuration])
     
     def test_cr4_step(self):
         from dynamiq_engine.features import momenta as f_momenta
