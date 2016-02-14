@@ -31,6 +31,23 @@ class testOneDimensionalInteractionModel(object):
         assert_almost_equal(self.pot.H(self.test_snap2), 4.25)
         assert_almost_equal(self.pot.H(self.test_snap3), 1.25)
 
+    def test_T(self):
+        # Definition of T is $L + V = p * dH/dp - H + V$; test this directly.
+        # Use a lambda rather than nested def because nested def screws with
+        # my in-editor test runner
+        explicit_T = lambda pes, snap : (
+            np.dot(snap.momenta, pes.dHdp(snap))
+            - self.pot.H(snap) + self.pot.V(snap)
+        )
+
+        assert_almost_equal(self.pot.T(self.test_snap1),
+                            explicit_T(self.pot, self.test_snap1))
+        assert_almost_equal(self.pot.T(self.test_snap2),
+                            explicit_T(self.pot, self.test_snap2))
+        assert_almost_equal(self.pot.T(self.test_snap3),
+                            explicit_T(self.pot, self.test_snap3))
+
+
     def test_dHdq(self):
         assert_array_almost_equal(self.pot.dHdq(self.test_snap1), 
                                   np.array([0.0]))

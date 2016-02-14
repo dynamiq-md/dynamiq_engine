@@ -159,4 +159,17 @@ class testMMSTHamiltonian(object):
             np.array([0.425, 1.0, 1.025, 0.5])
         )
 
+    def test_T(self):
+        # Definition of T is $L + V = p * dH/dp - H + V$; test this directly.
+        # Use a lambda rather than nested def because nested def screws with
+        # my in-editor test runner
+        explicit_T = lambda pes, snap : (
+            np.dot(snap.momenta, pes.dHdp(snap))
+            + np.dot(snap.electronic_momenta, pes.electronic_dHdp(snap))
+            - pes.H(snap) + pes.V(snap)
+        )
+        pes_T = self.tully.T(self.tully_snap)
+        assert_almost_equal(pes_T, explicit_T(self.tully, self.tully_snap))
+        assert_almost_equal(explicit_T(self.four_state, self.four_state_snap),
+                            self.four_state.T(self.four_state_snap))
 

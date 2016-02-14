@@ -22,6 +22,7 @@ class Snapshot(paths.AbstractSnapshot):
         self.topology = topology
         self.is_reversed = is_reversed
         # set monodromy matrices and action value
+        self._action = None
         if monodromy is not None:
             self._Mqq = monodromy[0]
             self._Mqp = monodromy[1]
@@ -84,10 +85,10 @@ class MMSTSnapshot(Snapshot):
 
     def copy(self):
         new_snap = MMSTSnapshot(
-            coordinates=self.coordinates.copy(), 
-            momenta=self.momenta.copy(), 
-            electronic_coordinates=self.eletronic_coordinates.copy(), 
-            electronic_momenta=self.electronic_momenta.copy(), 
+            coordinates=self.coordinates.copy(),
+            momenta=self.momenta.copy(),
+            electronic_coordinates=self.electronic_coordinates.copy(),
+            electronic_momenta=self.electronic_momenta.copy(),
             is_reversed=self.is_reversed,
             topology=self.topology
         )

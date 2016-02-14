@@ -28,15 +28,15 @@ class testCandyRozmus4(object):
         q0 = initial_snap.coordinates[0]
         return exact_ho(time, omega, m, p0, q0, x0)
 
-        #cos_wt = np.cos(omega*time)
-        #sin_wt = np.sin(omega*time)
-        #state_at_t = {
-            #'q' : np.array([q0*cos_wt + p0/m/omega*sin_wt + x0]),
-            #'p' : np.array([p0*cos_wt - q0*m*omega*sin_wt])
-        #}
-        #return state_at_t
-
+    @raises(RuntimeError)
+    def test_prepare_bad_feature_error(self):
+        import openpathsampling.features as paths_f
+        self.integ.prepare([paths_f.coordinates, paths_f.configuration])
+    
     def test_cr4_step(self):
+        from dynamiq_engine.features import momenta as f_momenta
+        from openpathsampling.features import coordinates as f_coordinates
+        self.integ.prepare([f_coordinates, f_momenta])
         new_snap = dynq.Snapshot(coordinates=np.array([0.0]),
                                  momenta=np.array([0.0]),
                                  topology=self.topology)
@@ -63,11 +63,30 @@ class testCandyRozmus4(object):
         assert_array_almost_equal(new_snap.coordinates, exact_0x10['q'])
         assert_array_almost_equal(new_snap.momenta, exact_0x10['p'])
 
+    def test_action(self):
+        import openpathsampling.features as paths_f
+        import dynamiq_engine.features as dynq_f
+        self.integ.prepare([paths_f.coordinates, dynq_f.momenta,
+                            dynq_f.action])
+        new_snap = dynq.Snapshot(coordinates=np.array([0.0]),
+                                 momenta=np.array([1.0]),
+                                 topology=self.topology)
+        exact = self.exact_ho(new_snap, 0.1)
+        self.integ.reset()
+        for i in range(10):
+            self.integ.step(self.potential, new_snap, new_snap)
+        # TODO: test action is correct
+        assert_almost_equal(new_snap.action, exact['S'])
+
 class testCandyRozmus4MMST(object):
     def test_step_uncoupled(self):
         from math import sqrt
         # test uncoupled
-        uncoupled_matrix = dynq.NonadiabaticMatrix([[2.0, 0.0], [0.0, 3.0]])
+        V0 = 2.0
+        V1 = 3.0
+        uncoupled_matrix = dynq.NonadiabaticMatrix([[V0, 0.0], [0.0, V1]])
+        # DEBUG
+        #uncoupled_matrix = dynq.NonadiabaticMatrix([[0.0, 0.0], [0.0, 3.0]])
         uncoupled = dynq.potentials.MMSTHamiltonian(uncoupled_matrix)
         uncoupled_topology = dynq.Topology(masses=[], potential=uncoupled)
         uncoupled_snap = dynq.MMSTSnapshot(
@@ -77,8 +96,34 @@ class testCandyRozmus4MMST(object):
             topology=uncoupled_topology
         )
         uncoupled_integ = CandyRozmus4MMST(0.01, uncoupled)
+        import dynamiq_engine.features as dynq_f
+        import openpathsampling.features as paths_f
+        uncoupled_integ.prepare([paths_f.coordinates, dynq_f.momenta,
+                                 dynq_f.electronic_coordinates,
+                                 dynq_f.electronic_momenta,
+                                 dynq_f.action])
+
+        explicit_T = lambda pes, snap : (
+            np.dot(snap.momenta, pes.dHdp(snap))
+            + np.dot(snap.electronic_momenta, pes.electronic_dHdp(snap))
+            #- pes.H(snap) + pes.V(snap)
+        )
+        uncoupled_integ.reset()
         for i in range(10):
             uncoupled_integ.step(uncoupled, uncoupled_snap, uncoupled_snap)
+            t=0.01*(i+1)
+            ho1 = exact_ho(time=t, omega=2.0, m=1.0/2.0, q0=1.0, p0=1.0)
+            ho2 = exact_ho(time=t, omega=3.0, m=1.0/3.0, q0=1.0, p0=1.0)
+            T = uncoupled.T(uncoupled_snap)
+            V = uncoupled.V(uncoupled_snap)
+            assert_almost_equal(ho1['L'] + ho2['L'] + 0.5*(V0+V1), T-V)
+            # TODO: note that there's some question about the correctness of
+            # the action here. However, we DO have the correct Lagrangian,
+            # and we get the correct action for other HO systems. So it is
+            # possible that the problem is a fundamental issue with this
+            # integration approach for the action.
+            # For future work to test this, the starting point should be
+            #print ho1['S']+ho2['S']+0.5*(V0+V1)*t, uncoupled_snap.action
 
         exact_1 = exact_ho(time=0.1, omega=2.0, m=1.0/2.0, q0=1.0, p0=1.0)
         exact_2 = exact_ho(time=0.1, omega=3.0, m=1.0/3.0, q0=1.0, p0=1.0)
@@ -88,6 +133,10 @@ class testCandyRozmus4MMST(object):
                                   np.array(predicted_coordinates))
         assert_array_almost_equal(uncoupled_snap.electronic_momenta,
                                   np.array(predicted_momenta))
+        
+        assert_almost_equal(explicit_T(uncoupled, uncoupled_snap),
+                            uncoupled.T(uncoupled_snap))
+
 
     def test_step_rabi(self):
         # test Rabi
@@ -142,10 +191,18 @@ class testCandyRozmus4MMST(object):
 
 
         tully_integ = CandyRozmus4MMST(1.0, tully)
+        import dynamiq_engine.features as dynq_f
+        import openpathsampling.features as paths_f
+        tully_integ.prepare([paths_f.coordinates, dynq_f.momenta,
+                             dynq_f.electronic_coordinates,
+                             dynq_f.electronic_momenta,
+                             dynq_f.action])
+
         tully_integ.step(tully, tully_snapshot, tully_snapshot)
 
         # NOTE: unverified -- these results are checked against the output
         # that they first gave, not against any analytical results
+        assert_not_equal(tully_snapshot.action, 0.0) # TODO: get tested val
         assert_array_almost_equal(tully_snapshot.coordinates,
                                   np.array([0.10959396]))
         assert_array_almost_equal(tully_snapshot.momenta,
