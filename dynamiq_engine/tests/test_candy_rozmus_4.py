@@ -69,7 +69,7 @@ class testCandyRozmus4(object):
         self.integ.prepare([paths_f.coordinates, dynq_f.momenta,
                             dynq_f.action])
         new_snap = dynq.Snapshot(coordinates=np.array([0.0]),
-                                 momenta=np.array([0.0]),
+                                 momenta=np.array([1.0]),
                                  topology=self.topology)
         exact = self.exact_ho(new_snap, 0.1)
         self.integ.reset()
@@ -82,7 +82,11 @@ class testCandyRozmus4MMST(object):
     def test_step_uncoupled(self):
         from math import sqrt
         # test uncoupled
-        uncoupled_matrix = dynq.NonadiabaticMatrix([[2.0, 0.0], [0.0, 3.0]])
+        V0 = 2.0
+        V1 = 3.0
+        uncoupled_matrix = dynq.NonadiabaticMatrix([[V0, 0.0], [0.0, V1]])
+        # DEBUG
+        #uncoupled_matrix = dynq.NonadiabaticMatrix([[0.0, 0.0], [0.0, 3.0]])
         uncoupled = dynq.potentials.MMSTHamiltonian(uncoupled_matrix)
         uncoupled_topology = dynq.Topology(masses=[], potential=uncoupled)
         uncoupled_snap = dynq.MMSTSnapshot(
@@ -99,8 +103,27 @@ class testCandyRozmus4MMST(object):
                                  dynq_f.electronic_momenta,
                                  dynq_f.action])
 
+        explicit_T = lambda pes, snap : (
+            np.dot(snap.momenta, pes.dHdp(snap))
+            + np.dot(snap.electronic_momenta, pes.electronic_dHdp(snap))
+            #- pes.H(snap) + pes.V(snap)
+        )
+        uncoupled_integ.reset()
         for i in range(10):
             uncoupled_integ.step(uncoupled, uncoupled_snap, uncoupled_snap)
+            t=0.01*(i+1)
+            ho1 = exact_ho(time=t, omega=2.0, m=1.0/2.0, q0=1.0, p0=1.0)
+            ho2 = exact_ho(time=t, omega=3.0, m=1.0/3.0, q0=1.0, p0=1.0)
+            T = uncoupled.T(uncoupled_snap)
+            V = uncoupled.V(uncoupled_snap)
+            assert_almost_equal(ho1['L'] + ho2['L'] + 0.5*(V0+V1), T-V)
+            # TODO: note that there's some question about the correctness of
+            # the action here. However, we DO have the correct Lagrangian,
+            # and we get the correct action for other HO systems. So it is
+            # possible that the problem is a fundamental issue with this
+            # integration approach for the action.
+            # For future work to test this, the starting point should be
+            #print ho1['S']+ho2['S']+0.5*(V0+V1)*t, uncoupled_snap.action
 
         exact_1 = exact_ho(time=0.1, omega=2.0, m=1.0/2.0, q0=1.0, p0=1.0)
         exact_2 = exact_ho(time=0.1, omega=3.0, m=1.0/3.0, q0=1.0, p0=1.0)
@@ -110,6 +133,10 @@ class testCandyRozmus4MMST(object):
                                   np.array(predicted_coordinates))
         assert_array_almost_equal(uncoupled_snap.electronic_momenta,
                                   np.array(predicted_momenta))
+        
+        assert_almost_equal(explicit_T(uncoupled, uncoupled_snap),
+                            uncoupled.T(uncoupled_snap))
+
 
     def test_step_rabi(self):
         # test Rabi

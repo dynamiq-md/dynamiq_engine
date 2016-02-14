@@ -173,4 +173,3 @@ class testMMSTHamiltonian(object):
         assert_almost_equal(explicit_T(self.four_state, self.four_state_snap),
                             self.four_state.T(self.four_state_snap))
 
-        raise SkipTest

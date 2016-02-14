@@ -115,7 +115,7 @@ class MMSTHamiltonian(PotentialEnergySurface):
     def T(self, snapshot):
         """ T = L + V, such that L = T - V
         
-        Since $L = P \dot{q} - H$, with $\dot{q} = -dH/dp$, and $dHdp$
+        Since $L = P \dot{q} - H$, with $\dot{q} = dH/dp$, and $dHdp$
         includes both $p$ and $q$, this gets a little more complicated than
         the normal non-MMST implementation.
         """
