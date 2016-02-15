@@ -41,16 +41,38 @@ class PotentialEnergySurface(object):
         np.copyto(dHdp, snapshot.velocities)
 
     def d2Hdq2(self, snapshot):
+        n_dim = self.n_spatial * self.n_atoms
+        d2Hdq2 = np.zeros(n_dim, n_dim)
+        self.set_d2Hdq2(d2Hdq2, snapshot)
+        return d2Hdq2
+
+    def set_d2Hdq2(self, d2Hdq2, snapshot):
         raise NotImplementedError("Using generic PES object")
 
     def d2Hdp2(self, snapshot):
-        raise NotImplementedError("Using generic PES object")
+        n_dim = self.n_spatial * self.n_atoms
+        d2Hdp2 = np.zeros(n_dim, n_dim)
+        self.set_d2Hdp2(d2Hdp2, snapshot)
+
+    def set_d2Hdp2(self, d2Hdp2, snapshot):
+        return # default shouldn't even alloc these
 
     def d2Hdqdp(self, snapshot):
-        raise NotImplementedError("Using generic PES object")
+        n_dim = self.n_spatial * self.n_atoms
+        d2Hdqdp = np.zeros(n_dim, n_dim)
+        self.set_d2Hdqdp(d2Hdqdp, snapshot)
+
+    def set_d2Hdqdp(self, d2Hdqdp, snapshot):
+        return # default shouldn't even alloc these
 
     def d2Hdpdq(self, snapshot):
+        n_dim = self.n_spatial * self.n_atoms
+        d2Hdpdq = np.zeros(n_dim, n_dim)
+        self.set_d2Hdpdq(d2Hdpdq, snapshot)
+
+    def set_d2Hdpdq(self, d2Hdpdq, snapshot):
         raise NotImplementedError("Using generic PES object")
+
 
 class OneDimensionalInteractionModel(PotentialEnergySurface):
     def __init__(self, interaction):
@@ -71,3 +93,6 @@ class OneDimensionalInteractionModel(PotentialEnergySurface):
         dHdp[0] = snapshot.velocities[0]
 
     # TODO: the rest is only necessary for full semiclassical calculations
+    def set_d2Hdq2(self, d2Hdq2, snapshot):
+        x = snapshot.coordinates[0]
+        d2Hdq2[(0,0)] = self.interaction.d2fdx2(x)
