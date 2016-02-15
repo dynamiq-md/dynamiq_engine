@@ -42,7 +42,7 @@ class PotentialEnergySurface(object):
 
     def d2Hdq2(self, snapshot):
         n_dim = self.n_spatial * self.n_atoms
-        d2Hdq2 = np.zeros(n_dim, n_dim)
+        d2Hdq2 = np.zeros((n_dim, n_dim))
         self.set_d2Hdq2(d2Hdq2, snapshot)
         return d2Hdq2
 
@@ -51,27 +51,34 @@ class PotentialEnergySurface(object):
 
     def d2Hdp2(self, snapshot):
         n_dim = self.n_spatial * self.n_atoms
-        d2Hdp2 = np.zeros(n_dim, n_dim)
+        d2Hdp2 = np.zeros((n_dim, n_dim))
         self.set_d2Hdp2(d2Hdp2, snapshot)
+        return d2Hdp2
 
     def set_d2Hdp2(self, d2Hdp2, snapshot):
-        return # default shouldn't even alloc these
+        # TODO: this is typically constant. Shouldn't we speed it up?
+        d2Hdp2.fill(0.0)
+        inv_m = snapshot.topology.inverse_masses
+        for i in range(len(inv_m)):
+            d2Hdp2[(i,i)] = inv_m[i]
 
     def d2Hdqdp(self, snapshot):
         n_dim = self.n_spatial * self.n_atoms
-        d2Hdqdp = np.zeros(n_dim, n_dim)
+        d2Hdqdp = np.zeros((n_dim, n_dim))
         self.set_d2Hdqdp(d2Hdqdp, snapshot)
+        return d2Hdqdp
 
     def set_d2Hdqdp(self, d2Hdqdp, snapshot):
         return # default shouldn't even alloc these
 
     def d2Hdpdq(self, snapshot):
         n_dim = self.n_spatial * self.n_atoms
-        d2Hdpdq = np.zeros(n_dim, n_dim)
+        d2Hdpdq = np.zeros((n_dim, n_dim))
         self.set_d2Hdpdq(d2Hdpdq, snapshot)
+        return d2Hdpdq
 
     def set_d2Hdpdq(self, d2Hdpdq, snapshot):
-        raise NotImplementedError("Using generic PES object")
+        return # default shouldn't even alloc these
 
 
 class OneDimensionalInteractionModel(PotentialEnergySurface):
