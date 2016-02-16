@@ -6,9 +6,15 @@ import math
 class CandyRozmus4(Integrator):
     """Fourth-order integrator by Candy and Rozmus.
 
+    Original integrator is from ???. Extensions to handle monodromy matrices
+    and action can be found in the appendix to ???. While this currently
+    supports MMST electronic variables, many properties of this integrator
+    (order, symplectic) may not hold in that case.
+
     References
     ----------
-
+    [1] Candy & Rozmus
+    [2] Manolopoulos
     """
     def __init__(self, dt, potential, n_frames=1):
         super(CandyRozmus4, self).__init__(dt)
@@ -89,6 +95,13 @@ class CandyRozmus4(Integrator):
             self.local_S = 0.0
         pass
 
+    # Each type of update supported by the code is split into calculating
+    # the delta and the applying (updating) the value. This makes the
+    # integrator very flexible.
+    # TODO: I think much of this can be restructured to fit many
+    # integrators; it might be better to move the code to some abstract
+    # place
+
     def momentum_calculate(self, potential, snap, k):
         potential.set_dHdq(self.local_dHdq, snap)
         self.local_dHdq *= self._b_k[k]
@@ -126,6 +139,8 @@ class CandyRozmus4(Integrator):
         snap.action = self.local_S
 
     def step(self, potential, old_snap, new_snap):
+        # the actual struture of the steps is in self.update_steps, which is
+        # set in self.prepare()
         new_snap.copy_from(old_snap)
         for k in range(4):
             for update in self.update_steps:

@@ -23,9 +23,11 @@ class MMSTHamiltonian(PotentialEnergySurface):
             # can this work?
             self.n_spatial = 0
             self.n_atoms = 0
+            self.n_nuclear_dim = 0
         else:
             self.n_spatial = runnables[0].n_spatial
             self.n_atoms = runnables[0].n_atoms
+            self.n_nuclear_dim = self.n_spatial * self.n_atoms
 
         err_str = " not the same in all nonadiabatic matrix entries."
         for runnable in runnables:
@@ -131,13 +133,24 @@ class MMSTHamiltonian(PotentialEnergySurface):
 
         return T
 
-    def d2Hdq2(self, snap):
+    def set_d2Hdq2(self, d2Hdq2, snapshot):
+        V_ij = self.H_matrix.numeric_matrix(snapshot)
+        elect = self._elect_cache(snapshot)
+
+        # block 1: 
+        for i in range(self.n_electronic_states):
+            for j in range(i, self.n_electronic_states):
+                d2Hdq2[(i,j)] = V_ij[(i,j)]
+                d2Hdq2[(j,i)] = V_ij[(i,j)]
+        
+
+
         pass
 
-    def d2Hdp2(self, snap):
+    def set_d2Hdp2(self, d2Hdp2, snapshot):
         pass
 
-    def d2Hdqdp(self, snap):
+    def set_d2Hdqdp(self, d2Hdqdp, snapshot):
         pass
 
     def d2Hdpdq(self, snap):

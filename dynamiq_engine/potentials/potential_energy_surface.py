@@ -3,11 +3,12 @@ import numpy as np
 class PotentialEnergySurface(object):
     """Abstract class for potential energy surfaces
 
-    Attributes
-    ----------
-    dynamics_level : integer (0, 1, or 2)
-        Level required to simulate the system
     """
+    def __init__(self, n_atoms, n_spatial):
+        self.n_atoms = n_atoms
+        self.n_spatial = n_spatial
+        self.n_dofs = n_atoms * n_spatial
+
     def H(self, snapshot):
         return self.V(snapshot) + self.kinetic_energy(snapshot)
 
@@ -41,8 +42,7 @@ class PotentialEnergySurface(object):
         np.copyto(dHdp, snapshot.velocities)
 
     def d2Hdq2(self, snapshot):
-        n_dim = self.n_spatial * self.n_atoms
-        d2Hdq2 = np.zeros((n_dim, n_dim))
+        d2Hdq2 = np.zeros((self.n_dofs, self.n_dofs))
         self.set_d2Hdq2(d2Hdq2, snapshot)
         return d2Hdq2
 
@@ -50,8 +50,7 @@ class PotentialEnergySurface(object):
         raise NotImplementedError("Using generic PES object")
 
     def d2Hdp2(self, snapshot):
-        n_dim = self.n_spatial * self.n_atoms
-        d2Hdp2 = np.zeros((n_dim, n_dim))
+        d2Hdp2 = np.zeros((self.n_dofs, self.n_dofs))
         self.set_d2Hdp2(d2Hdp2, snapshot)
         return d2Hdp2
 
@@ -63,8 +62,7 @@ class PotentialEnergySurface(object):
             d2Hdp2[(i,i)] = inv_m[i]
 
     def d2Hdqdp(self, snapshot):
-        n_dim = self.n_spatial * self.n_atoms
-        d2Hdqdp = np.zeros((n_dim, n_dim))
+        d2Hdqdp = np.zeros((self.n_dofs, self.n_dofs))
         self.set_d2Hdqdp(d2Hdqdp, snapshot)
         return d2Hdqdp
 
@@ -72,8 +70,7 @@ class PotentialEnergySurface(object):
         return # default shouldn't even alloc these
 
     def d2Hdpdq(self, snapshot):
-        n_dim = self.n_spatial * self.n_atoms
-        d2Hdpdq = np.zeros((n_dim, n_dim))
+        d2Hdpdq = np.zeros((self.n_dofs, self.n_dofs))
         self.set_d2Hdpdq(d2Hdpdq, snapshot)
         return d2Hdpdq
 
@@ -83,10 +80,8 @@ class PotentialEnergySurface(object):
 
 class OneDimensionalInteractionModel(PotentialEnergySurface):
     def __init__(self, interaction):
-        super(OneDimensionalInteractionModel, self).__init__()
-        self.n_atoms = 1
-        self.n_spatial = 1
-        self.dynamics_level = 0
+        super(OneDimensionalInteractionModel, self).__init__(n_atoms=1,
+                                                             n_spatial=1)
         self.interaction = interaction
 
     def V(self, snapshot):

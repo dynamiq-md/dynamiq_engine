@@ -173,3 +173,14 @@ class testMMSTHamiltonian(object):
         assert_almost_equal(explicit_T(self.four_state, self.four_state_snap),
                             self.four_state.T(self.four_state_snap))
 
+    def test_d2Hdq2(self):
+        raise SkipTest
+
+    def test_d2Hdp2(self):
+        raise SkipTest
+
+    def test_d2Hdqdp(self):
+        raise SkipTest
+
+    def test_d2Hdpdq(self):
+        raise SkipTest
