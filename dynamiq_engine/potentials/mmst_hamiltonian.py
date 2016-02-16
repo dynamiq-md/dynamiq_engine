@@ -18,16 +18,15 @@ class MMSTHamiltonian(PotentialEnergySurface):
 
         runnables = self.H_matrix.runnable_entries.values()
         try:
-            runnable_0 = runnables[0]
+            super(MMSTHamiltonian, self).__init__(
+                n_atoms=runnables[0].n_atoms,
+                n_spatial=runnables[0].n_spatial
+            )
         except IndexError:
-            # can this work?
-            self.n_spatial = 0
-            self.n_atoms = 0
-            self.n_nuclear_dim = 0
-        else:
-            self.n_spatial = runnables[0].n_spatial
-            self.n_atoms = runnables[0].n_atoms
-            self.n_nuclear_dim = self.n_spatial * self.n_atoms
+            super(MMSTHamiltonian, self).__init__(0, 0)
+
+        self.n_nuclear_dim = self.n_dofs
+        self.n_dofs += self.n_electronic_states
 
         err_str = " not the same in all nonadiabatic matrix entries."
         for runnable in runnables:
@@ -194,7 +193,7 @@ class MMSTHamiltonian(PotentialEnergySurface):
         
         # nuclear-nuclear
         for i in range(self.n_nuclear_dim):
-            d2Hdp2[(i,i)] = snapshot.topology.inverse_mass[i]
+            d2Hdp2[(i,i)] = snapshot.topology.inverse_masses[i]
 
 
     def set_d2Hdqdp(self, d2Hdqdp, snapshot):
@@ -212,8 +211,8 @@ class MMSTHamiltonian(PotentialEnergySurface):
                     snapshot.electronic_momenta[k]*nuc_dHdq[(i,k)][j]
                     for k in range(self.n_electronic_states)
                 ])
-                d2Hdq2[(dof_i, dof_j)] = val
-                d2Hdq2[(dof_j, dof_i)] = val
+                d2Hdqdp[(dof_i, dof_j)] = val
+                d2Hdqdp[(dof_j, dof_i)] = val
 
 
     def set_d2Hdpdq(self, d2Hdpdq, snapshot):

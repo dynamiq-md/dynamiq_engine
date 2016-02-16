@@ -177,13 +177,17 @@ class testMMSTHamiltonian(object):
                             self.four_state.T(self.four_state_snap))
 
     def test_d2Hdq2(self):
+        tully_d2Hdq2 = self.tully.d2Hdq2(self.tully_snap)
         raise SkipTest
 
     def test_d2Hdp2(self):
+        tully_d2Hdp2 = self.tully.d2Hdp2(self.tully_snap)
         raise SkipTest
 
     def test_d2Hdqdp(self):
+        tully_d2Hdqdp = self.tully.d2Hdqdp(self.tully_snap)
         raise SkipTest
 
     def test_d2Hdpdq(self):
+        tully_d2Hdpdq = self.tully.d2Hdpdq(self.tully_snap)
         raise SkipTest
