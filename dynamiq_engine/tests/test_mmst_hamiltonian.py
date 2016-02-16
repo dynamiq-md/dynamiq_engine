@@ -7,6 +7,9 @@ from dynamiq_engine.potentials.mmst_hamiltonian import *
 
 class testMMSTHamiltonian(object):
     def setup(self):
+        # TODO: create a test for a 3-electronic by 2-nuclear dof system
+        # for now, we only have thorough tests for 0 or 1 nuclear DOFs; the
+        # monodromy matrices deserve better attention beyond that.
         tully_V11 = pes.OneDimensionalInteractionModel(
             pes.interactions.TanhInteraction(a=1.6, V0=0.1)
         )

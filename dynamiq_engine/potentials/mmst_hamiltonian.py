@@ -86,6 +86,7 @@ class MMSTHamiltonian(PotentialEnergySurface):
         runnable_keys = [(i,j) 
                          for (i,j) in self.H_matrix.runnable_entries.keys() 
                          if i<=j] # upper triangular version
+        # TODO: cache the nuclear dHdqs ... see use in second deriv stuff
 
         for key in runnable_keys:
             self.H_matrix.runnable_entries[key].set_dHdq(self._part_dHdq,
@@ -137,22 +138,85 @@ class MMSTHamiltonian(PotentialEnergySurface):
         V_ij = self.H_matrix.numeric_matrix(snapshot)
         elect = self._elect_cache(snapshot)
 
-        # block 1: 
+        # electronic-electronic block
         for i in range(self.n_electronic_states):
             for j in range(i, self.n_electronic_states):
                 d2Hdq2[(i,j)] = V_ij[(i,j)]
                 d2Hdq2[(j,i)] = V_ij[(i,j)]
-        
 
+        # this can be sped up, I think TODO: check correctness
+        runnable_keys = [(i,j) 
+                         for (i,j) in self.H_matrix.runnable_entries.keys() 
+                         if i<=j] # upper triangular version
 
-        pass
+        nuc_d2Hdq2 = np.zeros((self.n_nuclear_dim, self.n_nuclear_dim))
+        tmp = np.zeros((self.n_nuclear_dim, self.n_nuclear_dim))
+        for k in runnable_keys:
+            self.H_matrix.runnable_entries[k].set_d2Hdq2(tmp, snapshot)
+            nuc_d2Hdq2 += tmp*elect[k]
+
+        # nuclear-nuclear block
+        for i in range(self.n_nuclear_dim):
+            dof_i = self.n_electronic_states + i
+            for j in range(j, self.n_nuclear_dim):
+                dof_j = self.n_electronic_states + j
+                d2Hdq2[(dof_i, dof_j)] = nuc_d2Hdq2[(i,j)]
+                d2Hdq2[(dof_j, dof_i)] = nuc_d2Hdq2[(i,j)]
+
+        # nuclear-electronic blocks
+        nuc_dHdq = {k : self.H_matrix.runnable_entries[k].dHdq(snapshot)
+                    for k in self.H_matrix.runnable_entries.keys()}
+        # TODO
+        for i in range(self.n_electronic_states):
+            dof_i = i
+            for j in range(self.n_nuclear_dim):
+                dof_j = self.n_electronic_states + j
+                val = sum([
+                    snapshot.electronic_coordinates[k]*nuc_dHdq[(i,k)][j]
+                    for k in range(self.n_electronic_states)
+                ])
+                d2Hdq2[(dof_i, dof_j)] = val
+                d2Hdq2[(dof_j, dof_i)] = val
+
 
     def set_d2Hdp2(self, d2Hdp2, snapshot):
-        pass
+        V_ij = self.H_matrix.numeric_matrix(snapshot)
+        elect = self._elect_cache(snapshot)
+
+        d2Hdp2.fill(0.0)
+        # nuclear-electronic blocks are zero
+
+        # electronic-electronic
+        for i in range(self.n_electronic_states):
+            for j in range(i, self.n_electronic_states):
+                d2Hdp2[(i,j)] = V_ij[(i,j)]
+                d2Hdp2[(j,i)] = V_ij[(i,j)]
+        
+        # nuclear-nuclear
+        for i in range(self.n_nuclear_dim):
+            d2Hdp2[(i,i)] = snapshot.topology.inverse_mass[i]
+
 
     def set_d2Hdqdp(self, d2Hdqdp, snapshot):
-        pass
+        runnable_keys = [(i,j)
+                         for (i,j) in self.H_matrix.runnable_entries.keys() 
+                         if i<=j] # upper triangular version
+        nuc_dHdq = {k : self.H_matrix.runnable_entries[k].dHdq(snapshot)
+                    for k in self.H_matrix.runnable_entries.keys()}
+        d2Hdqdp.fill(0.0)
+        for i in range(self.n_electronic_states):
+            dof_i = i
+            for j in range(self.n_nuclear_dim):
+                dof_j = self.n_electronic_states + j
+                val = sum([
+                    snapshot.electronic_momenta[k]*nuc_dHdq[(i,k)][j]
+                    for k in range(self.n_electronic_states)
+                ])
+                d2Hdq2[(dof_i, dof_j)] = val
+                d2Hdq2[(dof_j, dof_i)] = val
 
-    def d2Hdpdq(self, snap):
-        pass
+
+    def set_d2Hdpdq(self, d2Hdpdq, snapshot):
+        self.set_d2Hdqdp(d2Hdpdq, snapshot)
+        np.transpose(d2Hdpdq)
 
