@@ -3,6 +3,9 @@ import numpy as np
 
 import math
 
+import dynamiq_engine.features as dynq_f
+import openpathsampling.features as paths_f
+
 class CandyRozmus4(Integrator):
     """Fourth-order integrator by Candy and Rozmus.
 
@@ -32,23 +35,22 @@ class CandyRozmus4(Integrator):
         ]
         n_spatial = potential.n_spatial
         n_atoms = potential.n_atoms
+        self.potential = potential
         self.local_dHdq = np.zeros(n_spatial * n_atoms)
         self.local_dHdp = np.zeros(n_spatial * n_atoms)
 
+    _feature_type = {
+        'coordinates' : [paths_f.coordinates, dynq_f.electronic_coordinates],
+        'momenta' : [dynq_f.momenta, dynq_f.electronic_momenta],
+        'trajectory' : [dynq_f.action] 
+        # TODO: support for monodromy, prefactor, etc
+    }
     def prepare(self, feature_list):
-        import dynamiq_engine.features as dynq_f
-        import openpathsampling.features as paths_f
+        # TODO: move start to Integrator superclass
         self.feature_list = feature_list
         # TODO: get another integrator to support electronic dofs; I don't
         # think this one tehcnically should
-        supported_features = [
-            paths_f.coordinates,
-            dynq_f.momenta,
-            dynq_f.action,
-            dynq_f.electronic_coordinates,
-            dynq_f.electronic_momenta
-            # TODO: add support for monodromy or for prefactor
-        ]
+        supported_features = sum(self._feature_type.values(), [])
         for f in self.feature_list:
             if f not in supported_features:
                 raise RuntimeError("Feature " + str(f) + 
@@ -87,10 +89,8 @@ class CandyRozmus4(Integrator):
                              + pre_position + position + post_position 
                              + post_step)
 
-    def reset(self):
-        import dynamiq_engine.features as dynq_f
-        import openpathsampling.features as paths_f
-
+    def reset(self, snapshot):
+        # TODO: move to superclass
         if dynq_f.action in self.feature_list:
             self.local_S = 0.0
         pass

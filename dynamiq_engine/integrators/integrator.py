@@ -12,3 +12,4 @@ class Integrator(object):
 
     def step(self, snapshot):
         raise NotImplementedError("Abstract `Integrator` can't step.")
+
