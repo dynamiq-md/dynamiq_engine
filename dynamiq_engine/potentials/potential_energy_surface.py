@@ -8,6 +8,9 @@ class PotentialEnergySurface(object):
         self.n_atoms = n_atoms
         self.n_spatial = n_spatial
         self.n_dofs = n_atoms * n_spatial
+        # if the Hamiltonian can not be written H = T(p) + V(q), then
+        # `cross_terms` is True
+        self.cross_terms = False
 
     def H(self, snapshot):
         return self.V(snapshot) + self.kinetic_energy(snapshot)

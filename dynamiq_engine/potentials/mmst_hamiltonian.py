@@ -27,6 +27,7 @@ class MMSTHamiltonian(PotentialEnergySurface):
 
         self.n_nuclear_dim = self.n_dofs
         self.n_dofs += self.n_electronic_states
+        self.cross_terms = True
 
         err_str = " not the same in all nonadiabatic matrix entries."
         for runnable in runnables:
