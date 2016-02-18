@@ -212,11 +212,15 @@ class MMSTHamiltonian(PotentialEnergySurface):
                     snapshot.electronic_momenta[k]*nuc_dHdq[(i,k)][j]
                     for k in range(self.n_electronic_states)
                 ])
-                d2Hdqdp[(dof_i, dof_j)] = val
                 d2Hdqdp[(dof_j, dof_i)] = val
 
 
     def set_d2Hdpdq(self, d2Hdpdq, snapshot):
+        # code shouldn't actually use this, but it is here for completeness
         self.set_d2Hdqdp(d2Hdpdq, snapshot)
-        np.transpose(d2Hdpdq)
-
+        # do the transpose in-place (why doesn't numpy make this easy?)
+        for i in range(len(d2Hdpdq)):
+            for j in range(i, len(d2Hdpdq[i])):
+                tmp = d2Hdpdq[(i,j)]
+                d2Hdpdq[(i,j)] = d2Hdpdq[(j,i)]
+                d2Hdpdq[(j,i)] = tmp

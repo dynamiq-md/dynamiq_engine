@@ -232,4 +232,27 @@ class testMMSTHamiltonian(object):
     def test_d2Hdqdp_d2Hdpdq(self):
         tully_d2Hdqdp = self.tully.d2Hdqdp(self.tully_snap)
         tully_d2Hdpdq = self.tully.d2Hdpdq(self.tully_snap)
-        raise SkipTest
+
+        # nuclear-electronic
+        runnables = self.tully.H_matrix.runnable_entries
+        dVdx_ij = {}
+        for k in runnables.keys():
+            dVdx_ij[k] = runnables[k].dHdq(self.tully_snap)
+        p = self.tully_snap.electronic_momenta
+
+        for i in range(3):
+            for j in range(3):
+                # assert symmetric; then only test Hqp
+                assert_equal(tully_d2Hdqdp[(i,j)], tully_d2Hdpdq[(j,i)])
+                if (i,j) == (2, 0):
+                    assert_almost_equal(
+                        tully_d2Hdqdp[(i,j)],
+                        p[0]*dVdx_ij[(0,0)] + p[1]*dVdx_ij[(1,0)]
+                    )
+                elif (i,j) == (2, 1):
+                    assert_almost_equal(
+                        tully_d2Hdqdp[(i,j)],
+                        p[0]*dVdx_ij[(0,1)] + p[1]*dVdx_ij[(1,1)]
+                    )
+                else:
+                    assert_equal(tully_d2Hdqdp[(i,j)], 0.0)
