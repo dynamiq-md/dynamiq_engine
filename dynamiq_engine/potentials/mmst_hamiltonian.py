@@ -157,7 +157,7 @@ class MMSTHamiltonian(PotentialEnergySurface):
         # nuclear-nuclear block
         for i in range(self.n_nuclear_dim):
             dof_i = self.n_electronic_states + i
-            for j in range(j, self.n_nuclear_dim):
+            for j in range(i, self.n_nuclear_dim):
                 dof_j = self.n_electronic_states + j
                 d2Hdq2[(dof_i, dof_j)] = nuc_d2Hdq2[(i,j)]
                 d2Hdq2[(dof_j, dof_i)] = nuc_d2Hdq2[(i,j)]

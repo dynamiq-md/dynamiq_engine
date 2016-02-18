@@ -178,7 +178,39 @@ class testMMSTHamiltonian(object):
 
     def test_d2Hdq2(self):
         tully_d2Hdq2 = self.tully.d2Hdq2(self.tully_snap)
-        raise SkipTest
+        V_ij = self.tully.H_matrix.numeric_matrix(self.tully_snap)
+        assert_almost_equal(tully_d2Hdq2[0][0], V_ij[0][0])
+        assert_almost_equal(tully_d2Hdq2[0][1], V_ij[0][1])
+        assert_almost_equal(tully_d2Hdq2[1][0], V_ij[1][0])
+        assert_almost_equal(tully_d2Hdq2[1][1], V_ij[1][1])
+        
+        runnables = self.tully.H_matrix.runnable_entries
+        dVdx_ij = {}
+        d2Vdx2_ij = {}
+        for k in runnables.keys():
+            dVdx_ij[k] = runnables[k].dHdq(self.tully_snap)
+            d2Vdx2_ij[k] = runnables[k].d2Hdq2(self.tully_snap)
+
+        x = self.tully_snap.electronic_coordinates
+        p = self.tully_snap.electronic_momenta
+
+        assert_almost_equal(tully_d2Hdq2[0][2],
+                            x[0]*dVdx_ij[(0,0)] + x[1]*dVdx_ij[(0,1)])
+        assert_almost_equal(tully_d2Hdq2[2][0],
+                            x[0]*dVdx_ij[(0,0)] + x[1]*dVdx_ij[(1,0)])
+        assert_almost_equal(tully_d2Hdq2[1][2],
+                            x[0]*dVdx_ij[(1,0)] + x[1]*dVdx_ij[(1,1)])
+        assert_almost_equal(tully_d2Hdq2[2][1],
+                            x[0]*dVdx_ij[(0,1)] + x[1]*dVdx_ij[(1,1)])
+
+        Hqq_22_00 = 0.5 * (x[0]*x[0] + p[0]*p[0] - 1.0) * d2Vdx2_ij[(0,0)]
+        Hqq_22_11 = 0.5 * (x[1]*x[1] + p[1]*p[1] - 1.0) * d2Vdx2_ij[(1,1)]
+        Hqq_22_01 = 0.5 * (x[0]*x[1] + p[0]*p[1]) * d2Vdx2_ij[(0,1)]
+        Hqq_22_10 = 0.5 * (x[1]*x[0] + p[1]*p[0]) * d2Vdx2_ij[(1,0)]
+        assert_almost_equal(
+            tully_d2Hdq2[2][2], 
+            (Hqq_22_00 + Hqq_22_01 + Hqq_22_10 + Hqq_22_11)[0][0]
+        )
 
     def test_d2Hdp2(self):
         tully_d2Hdp2 = self.tully.d2Hdp2(self.tully_snap)
