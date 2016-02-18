@@ -214,12 +214,22 @@ class testMMSTHamiltonian(object):
 
     def test_d2Hdp2(self):
         tully_d2Hdp2 = self.tully.d2Hdp2(self.tully_snap)
-        raise SkipTest
+        V_ij = self.tully.H_matrix.numeric_matrix(self.tully_snap)
+        # electronic-electronic
+        assert_almost_equal(tully_d2Hdp2[0][0], V_ij[0][0])
+        assert_almost_equal(tully_d2Hdp2[0][1], V_ij[0][1])
+        assert_almost_equal(tully_d2Hdp2[1][0], V_ij[1][0])
+        assert_almost_equal(tully_d2Hdp2[1][1], V_ij[1][1])
 
-    def test_d2Hdqdp(self):
+        # nuclear-nuclear
+        assert_almost_equal(tully_d2Hdp2[2][2], 1.0/1980.0)
+
+        # nuclear-electronic
+        for i in [0, 1]:
+            assert_equal(tully_d2Hdp2[i][2], 0.0)
+            assert_equal(tully_d2Hdp2[2][i], 0.0)
+
+    def test_d2Hdqdp_d2Hdpdq(self):
         tully_d2Hdqdp = self.tully.d2Hdqdp(self.tully_snap)
-        raise SkipTest
-
-    def test_d2Hdpdq(self):
         tully_d2Hdpdq = self.tully.d2Hdpdq(self.tully_snap)
         raise SkipTest

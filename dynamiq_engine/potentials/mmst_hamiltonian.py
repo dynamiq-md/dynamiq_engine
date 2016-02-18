@@ -193,7 +193,8 @@ class MMSTHamiltonian(PotentialEnergySurface):
         
         # nuclear-nuclear
         for i in range(self.n_nuclear_dim):
-            d2Hdp2[(i,i)] = snapshot.topology.inverse_masses[i]
+            dof_i = self.n_electronic_states + i
+            d2Hdp2[(dof_i,dof_i)] = snapshot.topology.inverse_masses[i]
 
 
     def set_d2Hdqdp(self, d2Hdqdp, snapshot):
