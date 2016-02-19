@@ -43,3 +43,19 @@ def make_tully():
     return sys
 
 tully = make_tully()
+
+def make_anharmonic_morse():
+    potential = dynq.potentials.OneDimensionalInteractionModel(
+        dynq.potentials.interactions.MorseInteraction(D=30.0, beta=0.08, x0=0.5)
+    )
+    topology = dynq.Topology(masses=np.array([1.0]),
+                             potential=potential)
+    integrator = dynq.integrators.CandyRozmus4(dt=0.1, potential=potential)
+    anharmonic_morse = ExampleSystem(
+        potential=potential,
+        topology=topology,
+        integrator=integrator
+    )
+    return anharmonic_morse
+
+anharmonic_morse = make_anharmonic_morse()
