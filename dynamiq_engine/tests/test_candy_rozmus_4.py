@@ -165,32 +165,11 @@ class testCandyRozmus4MMST(object):
 
     def test_step_tully(self):
         # test Tully
-        tully_V11 = pes.OneDimensionalInteractionModel(
-            pes.interactions.TanhInteraction(a=1.6, V0=0.1)
-        )
-        tully_V22 = pes.OneDimensionalInteractionModel(
-            pes.interactions.TanhInteraction(a=1.6, V0=-0.1)
-        )
-        tully_V12 = pes.OneDimensionalInteractionModel(
-            pes.interactions.GaussianInteraction(A=0.05, alpha=1.0)
-        )
-        tully_matrix = dynq.NonadiabaticMatrix([[tully_V11, tully_V12],
-                                                [tully_V12, tully_V22]])
-        tully = dynq.potentials.MMSTHamiltonian(tully_matrix)
-        tully_topology = dynq.Topology(
-            masses=np.array([1980.0]),
-            potential=tully
-        )
-        tully_snapshot = dynq.MMSTSnapshot(
-            coordinates=np.array([0.1]),
-            momenta=np.array([19.0]),
-            electronic_coordinates=np.array([0.7, 0.6]),
-            electronic_momenta=np.array([0.2, 0.1]),
-            topology=tully_topology
-        )
+        from example_systems import tully as tully_example
+        tully = tully_example.potential
+        tully_snapshot = tully_example.snapshots[0].copy()
 
-
-        tully_integ = CandyRozmus4MMST(1.0, tully)
+        tully_integ = CandyRozmus4MMST(1.0, tully) # not default dt
         import dynamiq_engine.features as dynq_f
         import openpathsampling.features as paths_f
         tully_integ.prepare([paths_f.coordinates, dynq_f.momenta,
