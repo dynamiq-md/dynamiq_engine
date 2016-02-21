@@ -1,7 +1,24 @@
 import numpy as np
+from dynamiq_engine.potentials.potential_energy_surface import PotentialEnergySurface
+
+class PairwiseInteraction(PotentialEnergySurface):
+    def __init__(self):
+        super(PairwiseInteraction, self).__init__()
+        self.n_atoms = 1
+        self.n_spatial = 1
+
+    def V(self, snapshot):
+        x = snapshot.coordinates[0]
+        return self.f(x)
+
+    def set_dHdq(self, dHdq, snapshot):
+        x = snapshot.coordinates[0]
+        dHdq[0] = self.dfdx(x)
+
+    def set_dHdp(self, dHdp, snapshot):
+        dHdp[0] = snapshot.velocities[0]
 
 
-class PairwiseInteraction(object):
     def f(self, x):
         raise NotImplementedError()
 
@@ -11,7 +28,7 @@ class PairwiseInteraction(object):
     def d2fdx2(self, x):
         raise NotImplementedError()
 
-    def __call__(self, x):
+    def __call__(self, x): # TODO: call with f(x) or V(snapshot)?
         return self.f(x)
 
     # these are only relevant if you have atom-atom distances to calculate
