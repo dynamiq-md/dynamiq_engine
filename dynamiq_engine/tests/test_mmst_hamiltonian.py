@@ -10,30 +10,11 @@ class testMMSTHamiltonian(object):
         # TODO: create a test for a 3-electronic by 2-nuclear dof system
         # for now, we only have thorough tests for 0 or 1 nuclear DOFs; the
         # monodromy matrices deserve better attention beyond that.
-        tully_V11 = pes.OneDimensionalInteractionModel(
-            pes.interactions.TanhInteraction(a=1.6, V0=0.1)
-        )
-        tully_V22 = pes.OneDimensionalInteractionModel(
-            pes.interactions.TanhInteraction(a=1.6, V0=-0.1)
-        )
-        tully_V12 = pes.OneDimensionalInteractionModel(
-            pes.interactions.GaussianInteraction(A=0.05, alpha=1.0)
-        )
-        tully_matrix = dynq.NonadiabaticMatrix([[tully_V11, tully_V12],
-                                                [tully_V12, tully_V22]])
-        self.tully = MMSTHamiltonian(tully_matrix)
-        tully_topology = dynq.Topology(
-            masses=np.array([1980.0]),
-            potential=self.tully
-        )
-
-        self.tully_snap = dynq.MMSTSnapshot(
-            coordinates=np.array([0.1]),
-            momenta=np.array([19.0]),
-            electronic_coordinates=np.array([0.7, 0.6]),
-            electronic_momenta=np.array([0.2, 0.1]),
-            topology=tully_topology
-        )
+        from example_systems import tully
+        self.tully = tully.potential
+        self.tully_snap = tully.snapshots[0].copy()
+        # [x0, x1, R] = [0.7, 0.6, 0.1]
+        # [p0, p1, P] = [0.2, 0.1, 19.0]
         # tully_V11(tully_snap) = 0.1*tanh(1.6*0.1) = 0.0158648504297499
         # tully_V12(tully_snap) = 0.05*exp(-1.0*(0.1-0.0)^2) 
         #                       = 0.0495024916874584

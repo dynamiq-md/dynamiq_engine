@@ -7,9 +7,9 @@ from dynamiq_engine.potentials.potential_energy_surface import *
 
 class testOneDimensionalInteractionModel(object):
     def setup(self):
-        self.ho = pes.interactions.HarmonicOscillatorInteraction(k=2.0, x0=1.0)
-        self.ho_pot = OneDimensionalInteractionModel(self.ho)
-        ho_topol = dynq.Topology(masses=np.array([0.5]), potential=self.ho_pot)
+        from example_systems import ho_2_1
+        self.ho_pot = ho_2_1.potential
+        ho_topol = ho_2_1.topology
         self.ho_test_snaps = [
             dynq.Snapshot(coordinates=np.array([1.0]),
                           momenta=np.array([1.0]),
