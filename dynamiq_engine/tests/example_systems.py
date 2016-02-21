@@ -49,7 +49,21 @@ def make_anharmonic_morse():
         dynq.potentials.interactions.MorseInteraction(D=30.0, beta=0.08, x0=0.5)
     )
     integrator = dynq.integrators.CandyRozmus4(dt=0.1, potential=potential)
-    anharmonic_morse = ExampleSystem(potential, integrator, np.array([1.0]))
+    anharmonic_morse = ExampleSystem(potential, integrator, np.array([0.2]))
+    morse_topol = anharmonic_morse.topology
+    anharmonic_morse.add_example_snapshots([
+        dynq.Snapshot(coordinates=np.array([0.0]),
+                      momenta=np.array([0.4]),
+                      topology=morse_topol),
+        dynq.Snapshot(coordinates=np.array([-1.0]),
+                      momenta=np.array([0.6]),
+                      topology=morse_topol),
+        dynq.Snapshot(coordinates=np.array([5.0]),
+                      momenta=np.array([0.8]),
+                      topology=morse_topol)
+    ])
+
+
     return anharmonic_morse
 
 anharmonic_morse = make_anharmonic_morse()
@@ -61,7 +75,21 @@ def make_ho_2_1():
     potential = dynq.potentials.OneDimensionalInteractionModel(ho)
     integrator = dynq.integrators.CandyRozmus4(0.01, potential)
     masses = np.array([0.5])
-    return ExampleSystem(potential, integrator, masses)
+    ho_2_1 = ExampleSystem(potential, integrator, masses)
+    ho_topol = ho_2_1.topology
+    ho_2_1.add_example_snapshots([
+        dynq.Snapshot(coordinates=np.array([1.0]),
+                      momenta=np.array([1.0]),
+                      topology=ho_topol),
+        dynq.Snapshot(coordinates=np.array([0.5]),
+                      momenta=np.array([2.0]),
+                      topology=ho_topol),
+        dynq.Snapshot(coordinates=np.array([2.0]),
+                      momenta=np.array([-0.5]),
+                      topology=ho_topol)
+    ])
+    return ho_2_1
+
 
 ho_2_1 = make_ho_2_1()
 

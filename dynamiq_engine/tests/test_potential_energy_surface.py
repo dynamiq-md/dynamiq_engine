@@ -7,37 +7,12 @@ from dynamiq_engine.potentials.potential_energy_surface import *
 
 class testOneDimensionalInteractionModel(object):
     def setup(self):
-        from example_systems import ho_2_1
+        from example_systems import ho_2_1, anharmonic_morse
         self.ho_pot = ho_2_1.potential
-        ho_topol = ho_2_1.topology
-        self.ho_test_snaps = [
-            dynq.Snapshot(coordinates=np.array([1.0]),
-                          momenta=np.array([1.0]),
-                          topology=ho_topol),
-            dynq.Snapshot(coordinates=np.array([0.5]),
-                          momenta=np.array([2.0]),
-                          topology=ho_topol),
-            dynq.Snapshot(coordinates=np.array([2.0]),
-                          momenta=np.array([-0.5]),
-                          topology=ho_topol)
-        ]
+        self.ho_test_snaps = ho_2_1.snapshots
 
-        self.morse = pes.interactions.MorseInteraction(30.0, 0.08, 0.5)
-        self.morse_pot = OneDimensionalInteractionModel(self.morse)
-        morse_topol = dynq.Topology(masses=np.array([0.2]),
-                                    potential=self.morse_pot)
-        self.morse_test_snaps = [
-            dynq.Snapshot(coordinates=np.array([0.0]),
-                          momenta=np.array([0.4]),
-                          topology=morse_topol),
-            dynq.Snapshot(coordinates=np.array([-1.0]),
-                          momenta=np.array([0.6]),
-                          topology=morse_topol),
-            dynq.Snapshot(coordinates=np.array([5.0]),
-                          momenta=np.array([0.8]),
-                          topology=morse_topol)
-        ]
-
+        self.morse_pot = anharmonic_morse.potential
+        self.morse_test_snaps = anharmonic_morse.snapshots
 
     def test_H(self):
         tests = {
