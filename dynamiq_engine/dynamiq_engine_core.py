@@ -128,18 +128,19 @@ class DynamiqEngine(paths.DynamicsEngine):
     def __init__(self, potential, integrator, template):
         self.potential = potential
         self.integrator = integrator
+        self._current_snapshot = None
 
     @property
     def current_snapshot(self):
-        pass
+        return self._current_snapshot
 
     @current_snapshot.setter
     def current_snapshot(self, snap):
-        pass
+        self._current_snapshot = snap
 
     def generate_next_frame(self):
         self.integrator.step(self, self.nsteps_per_frame)
         return self.current_snapshot
 
-    def generate_n_frames(self, n):
-        pass
+    #def generate_n_frames(self, n):
+        # TODO: we can make faster ways of doing this than in the OPS code
