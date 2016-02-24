@@ -36,5 +36,31 @@ class testSnapshot(object):
 
 class testDynamiqEngine(object):
     def setup(self):
-        pass
+        from example_systems import ho_2_1
+        self.topology = ho_2_1.topology
+        self.potential = ho_2_1.potential
+        self.integrator = ho_2_1.integrator
+        self.snap = Snapshot(
+            coordinates=np.array([0.0]),
+            momenta=np.array([0.0]),
+            topology=self.topology
+        )
+        self.engine = DynamiqEngine(self.potential, 
+                                    self.integrator,
+                                    self.snap)
 
+    def test_current_snapshot(self):
+        snap = Snapshot(
+            coordinates=np.array([1.0]),
+            momenta=np.array([1.0]),
+            topology=self.topology
+        )
+        self.engine.current_snapshot = snap
+        loaded = self.engine.current_snapshot
+
+        assert_array_almost_equal(snap.coordinates, loaded.coordinates)
+        assert_array_almost_equal(snap.momenta, loaded.momenta)
+
+
+    def test_generate_next_frame(self):
+        raise SkipTest

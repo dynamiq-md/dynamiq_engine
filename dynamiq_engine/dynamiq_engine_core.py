@@ -130,13 +130,14 @@ class DynamiqEngine(paths.DynamicsEngine):
         self.integrator = integrator
         self._current_snapshot = None
 
+    # TODO: change so that current_snapshot tends to use a copy_from
     @property
     def current_snapshot(self):
         return self._current_snapshot
 
     @current_snapshot.setter
     def current_snapshot(self, snap):
-        self._current_snapshot = snap
+        self._current_snapshot = snap.copy()
 
     def generate_next_frame(self):
         self.integrator.step(self, self.nsteps_per_frame)
