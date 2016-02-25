@@ -128,6 +128,7 @@ class DynamiqEngine(paths.DynamicsEngine):
     def __init__(self, potential, integrator, template):
         self.potential = potential
         self.integrator = integrator
+        self.template = template
         self._current_snapshot = None
 
     # TODO: change so that current_snapshot tends to use a copy_from
@@ -139,8 +140,15 @@ class DynamiqEngine(paths.DynamicsEngine):
     def current_snapshot(self, snap):
         self._current_snapshot = snap.copy()
 
+    def start(self):
+        features = self.template.__features__
+        self.integrator.prepare(features)
+
     def generate_next_frame(self):
-        self.integrator.step(self, self.nsteps_per_frame)
+        # TODO: add support for n_steps_per_frame
+        self.integrator.step(potential=self.potential, 
+                             old_snap=self._current_snapshot,
+                             new_snap=self._current_snapshot)
         return self.current_snapshot
 
     #def generate_n_frames(self, n):

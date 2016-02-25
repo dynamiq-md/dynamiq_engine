@@ -63,4 +63,12 @@ class testDynamiqEngine(object):
 
 
     def test_generate_next_frame(self):
+        snap = Snapshot(
+            coordinates=np.array([1.0]),
+            momenta=np.array([1.0]),
+            topology=self.topology
+        )
+        self.engine.current_snapshot = snap
+        self.engine.start()
+        newsnap = self.engine.generate_next_frame()
         raise SkipTest
