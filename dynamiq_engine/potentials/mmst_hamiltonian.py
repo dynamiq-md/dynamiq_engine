@@ -2,13 +2,14 @@ import dynamiq_engine as dynq
 from dynamiq_engine.potentials import PotentialEnergySurface
 import numpy as np
 
+
 class MMSTHamiltonian(PotentialEnergySurface):
     """Meyer-Miller-Stock-Thoss mapped electron Hamiltonian.
 
     Parameters
     ----------
     H_matrix : dynamiq_engine.NonadiabaticMatrix
-        The input Hamiltonian matrix. 
+        The input Hamiltonian matrix.
     """
 
     def __init__(self, H_matrix, electronic_first=True):
@@ -32,7 +33,6 @@ class MMSTHamiltonian(PotentialEnergySurface):
             assert runnable.n_spatial == self.n_spatial, "n_spatial" + err_str
             assert runnable.n_atoms == self.n_atoms, "n_atoms" + err_str
 
-
     def _elect_cache(self, snap):
         """Returns a cache of the electronic parts of the Hamiltonian.
 
@@ -54,7 +54,7 @@ class MMSTHamiltonian(PotentialEnergySurface):
                 p_j = snap.electronic_momenta[j]
                 elect[(i,j)] = x_i*x_j + p_i*p_j
         return elect
- 
+
     def V(self, snapshot):
         """For the MMST Hamiltonian, this is V_{eff}, the effective potential.
 
@@ -63,11 +63,11 @@ class MMSTHamiltonian(PotentialEnergySurface):
         """
         elect = self._elect_cache(snapshot)
         V_ij = self.H_matrix.numeric_matrix(snapshot)
-       
+
         V = sum([elect[key] * V_ij[key] for key in self.H_matrix.keys()])
         return V
 
-    
+
     def set_electronic_dHdq(self, electronic_dHdq, snapshot):
         V_ij = self.H_matrix.numeric_matrix(snapshot)
 
@@ -81,15 +81,14 @@ class MMSTHamiltonian(PotentialEnergySurface):
         elect = self._elect_cache(snapshot)
         dHdq.fill(0.0)
         self._part_dHdq = np.zeros_like(dHdq)
-        runnable_keys = [(i,j) 
-                         for (i,j) in self.H_matrix.runnable_entries.keys() 
-                         if i<=j] # upper triangular version
+        runnable_keys = [(i,j)
+                         for (i,j) in self.H_matrix.runnable_entries.keys()
+                         if i<=j]  # upper triangular version
 
         for key in runnable_keys:
             self.H_matrix.runnable_entries[key].set_dHdq(self._part_dHdq,
                                                          snapshot)
             np.add(self._part_dHdq * elect[key], dHdq, dHdq)
-
 
     def set_electronic_dHdp(self, electronic_dHdp, snapshot):
         V_ij = self.H_matrix.numeric_matrix(snapshot)
@@ -114,7 +113,7 @@ class MMSTHamiltonian(PotentialEnergySurface):
 
     def T(self, snapshot):
         """ T = L + V, such that L = T - V
-        
+
         Since $L = P \dot{q} - H$, with $\dot{q} = dH/dp$, and $dHdp$
         includes both $p$ and $q$, this gets a little more complicated than
         the normal non-MMST implementation.
@@ -142,4 +141,3 @@ class MMSTHamiltonian(PotentialEnergySurface):
 
     def d2Hdpdq(self, snap):
         pass
-
