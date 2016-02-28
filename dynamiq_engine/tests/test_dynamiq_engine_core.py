@@ -45,9 +45,9 @@ class testDynamiqEngine(object):
             momenta=np.array([0.0]),
             topology=self.topology
         )
-        self.engine = DynamiqEngine(self.potential, 
-                                    self.integrator,
-                                    self.snap)
+        self.engine = DynamiqEngine(potential=self.potential, 
+                                    integrator=self.integrator,
+                                    template=self.snap)
 
     def test_current_snapshot(self):
         snap = Snapshot(
@@ -75,3 +75,16 @@ class testDynamiqEngine(object):
         assert_almost_equal(ho['q'], newsnap.coordinates)
         assert_almost_equal(ho['p'], newsnap.momenta)
         assert_almost_equal(newsnap, self.engine.current_snapshot)
+
+    def test_generate(self):
+        import openpathsampling as paths
+        ensemble = paths.LengthEnsemble(10)
+        snap = Snapshot(
+            coordinates=np.array([1.0]),
+            momenta=np.array([1.0]),
+            topology=self.topology
+        )
+        self.engine.current_snapshot = snap
+        self.engine.start()
+        traj = self.engine.generate(snap, running=[ensemble.can_append])
+        assert_equal(len(traj), 10)
