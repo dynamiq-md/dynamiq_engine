@@ -52,22 +52,3 @@ class PotentialEnergySurface(object):
     def d2Hdpdq(self, snapshot):
         raise NotImplementedError("Using generic PES object")
 
-class OneDimensionalInteractionModel(PotentialEnergySurface):
-    def __init__(self, interaction):
-        super(OneDimensionalInteractionModel, self).__init__()
-        self.n_atoms = 1
-        self.n_spatial = 1
-        self.dynamics_level = 0
-        self.interaction = interaction
-
-    def V(self, snapshot):
-        return self.interaction.f(snapshot.coordinates[0])
-
-    def set_dHdq(self, dHdq, snapshot):
-        x = snapshot.coordinates[0]
-        dHdq[0] = self.interaction.dfdx(x)
-
-    def set_dHdp(self, dHdp, snapshot):
-        dHdp[0] = snapshot.velocities[0]
-
-    # TODO: the rest is only necessary for full semiclassical calculations

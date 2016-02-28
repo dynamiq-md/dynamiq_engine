@@ -2,6 +2,7 @@ import dynamiq_engine as dynq
 from tools import *
 
 from dynamiq_engine.potentials.pairwise_interactions import *
+from example_systems import ho_2_1, anharmonic_morse
 
 class testConstantInteraction(object):
     def setup(self):
@@ -14,7 +15,6 @@ class testConstantInteraction(object):
             0.5 : 3.5
         }
         check_function(self.cst.f, tests)
-        check_function(self.cst, tests)
 
     def test_dfdx(self):
         tests = { 0.0 : 0.0, 1.0 : 0.0, 0.5 : 0.0 }
@@ -26,7 +26,23 @@ class testConstantInteraction(object):
 
 class testHarmonicOscillatorInteraction(object):
     def setup(self):
-        self.ho = HarmonicOscillatorInteraction(k=2.0, x0=1.0)
+        self.ho = ho_2_1.potential
+        topology = ho_2_1.topology
+        self.test_snap1 = dynq.Snapshot(
+            coordinates=np.array([1.0]),
+            momenta=np.array([1.0]),
+            topology=topology
+        )
+        self.test_snap2 = dynq.Snapshot(
+            coordinates=np.array([0.5]),
+            momenta=np.array([2.0]),
+            topology=topology
+        )
+        self.test_snap3 = dynq.Snapshot(
+            coordinates=np.array([2.0]),
+            momenta=np.array([-0.5]),
+            topology=topology
+        )
 
     def test_f(self):
         tests = {
@@ -36,7 +52,6 @@ class testHarmonicOscillatorInteraction(object):
             2.0 : 1.0
         }
         check_function(self.ho.f, tests)
-        check_function(self.ho, tests)
 
     def test_dfdx(self):
         tests = {
@@ -56,6 +71,55 @@ class testHarmonicOscillatorInteraction(object):
         }
         check_function(self.ho.d2fdx2, tests)
 
+    def test_H(self):
+        assert_almost_equal(self.ho.H(self.test_snap1), 1.0)
+        assert_almost_equal(self.ho.H(self.test_snap2), 4.25)
+        assert_almost_equal(self.ho.H(self.test_snap3), 1.25)
+
+    def test_T(self):
+        # Definition of T is $L + V = p * dH/dp - H + V$; test this directly.
+        # Use a lambda rather than nested def because nested def screws with
+        # my in-editor test runner
+        explicit_T = lambda pes, snap : (
+            np.dot(snap.momenta, pes.dHdp(snap))
+            - self.ho.H(snap) + self.ho.V(snap)
+        )
+        assert_almost_equal(self.ho.T(self.test_snap1),
+                            explicit_T(self.ho, self.test_snap1))
+        assert_almost_equal(self.ho.T(self.test_snap2),
+                            explicit_T(self.ho, self.test_snap2))
+        assert_almost_equal(self.ho.T(self.test_snap3),
+                            explicit_T(self.ho, self.test_snap3))
+
+    def test_dHdq(self):
+        assert_array_almost_equal(self.ho.dHdq(self.test_snap1), 
+                                  np.array([0.0]))
+        assert_array_almost_equal(self.ho.dHdq(self.test_snap2), 
+                                  np.array([-1.0]))
+        assert_array_almost_equal(self.ho.dHdq(self.test_snap3), 
+                                  np.array([2.0]))
+
+    def test_dHdp(self):
+        assert_array_almost_equal(self.ho.dHdp(self.test_snap1),
+                                  np.array([2.0]))
+        assert_array_almost_equal(self.ho.dHdp(self.test_snap2),
+                                  np.array([4.0]))
+        assert_array_almost_equal(self.ho.dHdp(self.test_snap3),
+                                  np.array([-1.0]))
+
+    def test_d2Hdq2(self):
+        raise SkipTest
+
+    def test_d2Hdpdq(self):
+        raise SkipTest
+
+    def test_d2Hdqdp(self):
+        raise SkipTest
+
+    def test_d2Hdp2(self):
+        raise SkipTest
+
+
 class testTanhInteraction(object):
     def setup(self):
         self.tanh = TanhInteraction(a=0.75, V0=0.1, R0=0.5)
@@ -68,7 +132,6 @@ class testTanhInteraction(object):
             2.0 : 0.0809301070201781
         }
         check_function(self.tanh.f, tests)
-        check_function(self.tanh, tests)
 
     def test_dfdx(self):
         tests = {
@@ -88,6 +151,7 @@ class testTanhInteraction(object):
         }
         check_function(self.tanh.d2fdx2, tests)
 
+
 class testMorseInteraction(object):
     def setup(self):
         self.morse = MorseInteraction(D=30.0, beta=0.08, x0=0.5)
@@ -100,7 +164,6 @@ class testMorseInteraction(object):
             5.0 : 2.74198811453729
         }
         check_function(self.morse.f, tests)
-        check_function(self.morse, tests)
 
     def test_dfdx(self):
         tests = {
@@ -132,7 +195,6 @@ class testQuarticInteraction(object):
             2.0 : 18.0625
         }
         check_function(self.quartic.f, tests)
-        check_function(self.quartic, tests)
 
     def test_dfdx(self):
         tests = {
@@ -164,7 +226,6 @@ class testGaussianInteraction(object):
             2.0 : 1.13956564946185
         }
         check_function(self.gaussian.f, tests)
-        check_function(self.gaussian, tests)
 
     def test_dfdx(self):
         tests = {

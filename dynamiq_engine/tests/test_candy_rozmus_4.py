@@ -5,14 +5,13 @@ from tools import *
 from dynamiq_engine.integrators.candy_rozmus_4 import *
 import dynamiq_engine.potentials as pes
 
+from example_systems import ho_2_1
+
 class testCandyRozmus4(object):
     def setup(self):
-        self.ho = dynq.potentials.interactions.HarmonicOscillatorInteraction(
-            k=2.0, x0=1.0
-        )
-        self.potential = dynq.potentials.OneDimensionalInteractionModel(self.ho)
-        self.topology = dynq.Topology(masses=np.array([0.5]), 
-                                      potential=self.potential)
+        self.potential = ho_2_1.potential
+        self.ho = ho_2_1.potential
+        self.topology = ho_2_1.topology
         self.integ = CandyRozmus4(0.01, self.potential)
         self.snap0 = dynq.Snapshot(
             coordinates=np.array([1.0]),
