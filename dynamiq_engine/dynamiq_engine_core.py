@@ -125,21 +125,31 @@ class DynamiqEngine(paths.DynamicsEngine):
 
     base_snapshot_type = Snapshot
 
-    def __init__(self, potential, integrator, template):
+    def __init__(self, potential, integrator, options=None, template=None):
+        super(DynamiqEngine, self).__init__(options, template)
         self.potential = potential
         self.integrator = integrator
+        self._current_snapshot = None
 
+    # TODO: change so that current_snapshot tends to use a copy_from
     @property
     def current_snapshot(self):
-        pass
+        return self._current_snapshot
 
     @current_snapshot.setter
     def current_snapshot(self, snap):
-        pass
+        self._current_snapshot = snap.copy()
+
+    def start(self):
+        features = self.template.__features__
+        self.integrator.prepare(features)
 
     def generate_next_frame(self):
-        self.integrator.step(self, self.nsteps_per_frame)
+        # TODO: add support for n_steps_per_frame
+        self.integrator.step(potential=self.potential, 
+                             old_snap=self._current_snapshot,
+                             new_snap=self._current_snapshot)
         return self.current_snapshot
 
-    def generate_n_frames(self, n):
-        pass
+    #def generate_n_frames(self, n):
+        # TODO: we can make faster ways of doing this than in the OPS code
