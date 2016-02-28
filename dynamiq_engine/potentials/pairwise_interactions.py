@@ -40,6 +40,7 @@ class PairwiseInteraction(PotentialEnergySurface):
 
 class ConstantInteraction(PairwiseInteraction):
     def __init__(self, value):
+        super(ConstantInteraction, self).__init__()
         self.value = value
 
     def f(self, x):
@@ -53,6 +54,7 @@ class ConstantInteraction(PairwiseInteraction):
 
 class HarmonicOscillatorInteraction(PairwiseInteraction):
     def __init__(self, k, x0):
+        super(HarmonicOscillatorInteraction, self).__init__()
         self.k = k
         self.x0 = x0
 
@@ -68,6 +70,7 @@ class HarmonicOscillatorInteraction(PairwiseInteraction):
 
 class TanhInteraction(PairwiseInteraction):
     def __init__(self, a, V0, R0=0.0):
+        super(TanhInteraction, self).__init__()
         self.a = a
         self.V0 = V0
         self.R0 = R0
@@ -91,6 +94,7 @@ class TanhInteraction(PairwiseInteraction):
 
 class MorseInteraction(PairwiseInteraction):
     def __init__(self, D, beta, x0):
+        super(MorseInteraction, self).__init__()
         self.D = D
         self.beta = beta
         self.x0 = x0
@@ -112,6 +116,7 @@ class MorseInteraction(PairwiseInteraction):
 
 class QuarticInteraction(PairwiseInteraction):
     def __init__(self, A, B, C, D, E0, x0):
+        super(QuarticInteraction, self).__init__()
         x0_2 = x0*x0
         x0_3 = x0_2 * x0
         x0_4 = x0_3 * x0
@@ -137,6 +142,7 @@ class QuarticInteraction(PairwiseInteraction):
 
 class GaussianInteraction(PairwiseInteraction):
     def __init__(self, A, alpha, x0=0.0):
+        super(GaussianInteraction, self).__init__()
         self.A = A
         self.alpha = alpha
         self.x0 = x0

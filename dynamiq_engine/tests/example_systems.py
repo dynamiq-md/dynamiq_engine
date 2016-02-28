@@ -59,6 +59,7 @@ def make_ho_2_1():
         k=2.0, x0=1.0
     )
     potential = dynq.potentials.OneDimensionalInteractionModel(ho)
+    potential = ho
     integrator = dynq.integrators.CandyRozmus4(0.01, potential)
     masses = np.array([0.5])
     return ExampleSystem(potential, integrator, masses)
