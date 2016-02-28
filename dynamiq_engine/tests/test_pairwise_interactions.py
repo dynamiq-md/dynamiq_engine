@@ -2,6 +2,7 @@ import dynamiq_engine as dynq
 from tools import *
 
 from dynamiq_engine.potentials.pairwise_interactions import *
+from example_systems import ho_2_1, anharmonic_morse
 
 class testConstantInteraction(object):
     def setup(self):
@@ -14,7 +15,6 @@ class testConstantInteraction(object):
             0.5 : 3.5
         }
         check_function(self.cst.f, tests)
-        check_function(self.cst, tests)
 
     def test_dfdx(self):
         tests = { 0.0 : 0.0, 1.0 : 0.0, 0.5 : 0.0 }
@@ -26,7 +26,8 @@ class testConstantInteraction(object):
 
 class testHarmonicOscillatorInteraction(object):
     def setup(self):
-        self.ho = HarmonicOscillatorInteraction(k=2.0, x0=1.0)
+        self.ho = ho_2_1.potential
+        self.ho_test_snaps = ho_2_1.snapshots
 
     def test_f(self):
         tests = {
@@ -36,7 +37,6 @@ class testHarmonicOscillatorInteraction(object):
             2.0 : 1.0
         }
         check_function(self.ho.f, tests)
-        check_function(self.ho, tests)
 
     def test_dfdx(self):
         tests = {
@@ -56,6 +56,66 @@ class testHarmonicOscillatorInteraction(object):
         }
         check_function(self.ho.d2fdx2, tests)
 
+    def test_H(self):
+        tests = {
+            self.ho_test_snaps[0] : 1.0,
+            self.ho_test_snaps[1] : 4.25,
+            self.ho_test_snaps[2] : 1.25
+        }
+        check_function(self.ho.H, tests)
+
+    def test_T(self):
+        # Definition of T is $L + V = p * dH/dp - H + V$; test this directly.
+        # Use a lambda rather than nested def because nested def screws with
+        # my in-editor test runner
+        explicit_T = lambda pes, snap : (
+            np.dot(snap.momenta, pes.dHdp(snap))
+            - self.ho.H(snap) + self.ho.V(snap)
+        )
+        tests = {s : explicit_T(self.ho, s) for s in self.ho_test_snaps}
+        check_function(self.ho.T, tests)
+
+    def test_dHdq(self):
+        tests = {
+            self.ho_test_snaps[0] : np.array([0.0]),
+            self.ho_test_snaps[1] : np.array([-1.0]),
+            self.ho_test_snaps[2] : np.array([2.0])
+        }
+        check_function(self.ho.dHdq, tests)
+
+    def test_dHdp(self):
+        tests = {
+            self.ho_test_snaps[0] : np.array([2.0]),
+            self.ho_test_snaps[1] : np.array([4.0]),
+            self.ho_test_snaps[2] : np.array([-1.0])
+        }
+        check_function(self.ho.dHdp, tests)
+
+    def test_d2Hdq2(self):
+        tests = {s : np.array([[2.0]]) for s in self.ho_test_snaps}
+        check_function(self.ho.d2Hdq2, tests)
+
+    def test_d2Hdpdq(self):
+        tests = {s : np.array([[0.0]]) for s in self.ho_test_snaps}
+        check_function(self.ho.d2Hdpdq, tests)
+
+        local_d2Hdpdq = None
+        for s in self.ho_test_snaps:
+            self.ho.set_d2Hdpdq(local_d2Hdpdq, s)
+
+    def test_d2Hdqdp(self):
+        tests = {s : np.array([[0.0]]) for s in self.ho_test_snaps}
+        check_function(self.ho.d2Hdqdp, tests)
+
+        local_d2Hdqdp = None
+        for s in self.ho_test_snaps:
+            self.ho.set_d2Hdqdp(local_d2Hdqdp, s)
+
+    def test_d2Hdp2(self):
+        tests = {s : np.array([[2.0]]) for s in self.ho_test_snaps}
+        check_function(self.ho.d2Hdp2, tests)
+
+
 class testTanhInteraction(object):
     def setup(self):
         self.tanh = TanhInteraction(a=0.75, V0=0.1, R0=0.5)
@@ -68,7 +128,6 @@ class testTanhInteraction(object):
             2.0 : 0.0809301070201781
         }
         check_function(self.tanh.f, tests)
-        check_function(self.tanh, tests)
 
     def test_dfdx(self):
         tests = {
@@ -88,9 +147,12 @@ class testTanhInteraction(object):
         }
         check_function(self.tanh.d2fdx2, tests)
 
+
 class testMorseInteraction(object):
     def setup(self):
-        self.morse = MorseInteraction(D=30.0, beta=0.08, x0=0.5)
+        #self.morse = MorseInteraction(D=30.0, beta=0.08, x0=0.5)
+        self.morse = anharmonic_morse.potential
+        self.morse_test_snaps = anharmonic_morse.snapshots
 
     def test_f(self):
         tests = {
@@ -100,7 +162,6 @@ class testMorseInteraction(object):
             5.0 : 2.74198811453729
         }
         check_function(self.morse.f, tests)
-        check_function(self.morse, tests)
 
     def test_dfdx(self):
         tests = {
@@ -120,6 +181,18 @@ class testMorseInteraction(object):
         }
         check_function(self.morse.d2fdx2, tests)
 
+    def test_d2Hdq2(self):
+        tests = {
+            self.morse_test_snaps[0] : 0.432293130684491,
+            self.morse_test_snaps[1] : 0.543360556440359,
+            self.morse_test_snaps[2] : 0.105918023365982
+        }
+        check_function(self.morse.d2Hdq2, tests)
+
+    def test_d2Hdp2(self):
+        tests = {s : np.array([[5.0]]) for s in self.morse_test_snaps}
+        check_function(self.morse.d2Hdp2, tests)
+
 class testQuarticInteraction(object):
     def setup(self):
         self.quartic = QuarticInteraction(1.5, 1.25, 2.0, 1.0, 0.25, 0.5)
@@ -132,7 +205,6 @@ class testQuarticInteraction(object):
             2.0 : 18.0625
         }
         check_function(self.quartic.f, tests)
-        check_function(self.quartic, tests)
 
     def test_dfdx(self):
         tests = {
@@ -164,7 +236,6 @@ class testGaussianInteraction(object):
             2.0 : 1.13956564946185
         }
         check_function(self.gaussian.f, tests)
-        check_function(self.gaussian, tests)
 
     def test_dfdx(self):
         tests = {

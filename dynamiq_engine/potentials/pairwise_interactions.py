@@ -1,7 +1,26 @@
 import numpy as np
+from dynamiq_engine.potentials.potential_energy_surface import PotentialEnergySurface
+
+class PairwiseInteraction(PotentialEnergySurface):
+    def __init__(self):
+        super(PairwiseInteraction, self).__init__(n_atoms=1, n_spatial=1)
+
+    def V(self, snapshot):
+        x = snapshot.coordinates[0]
+        return self.f(x)
+
+    def set_dHdq(self, dHdq, snapshot):
+        x = snapshot.coordinates[0]
+        dHdq[0] = self.dfdx(x)
+
+    def set_dHdp(self, dHdp, snapshot):
+        dHdp[0] = snapshot.velocities[0]
+
+    def set_d2Hdq2(self, d2Hdq2, snapshot):
+        x = snapshot.coordinates[0]
+        d2Hdq2[(0,0)] = self.d2fdx2(x)
 
 
-class PairwiseInteraction(object):
     def f(self, x):
         raise NotImplementedError()
 
@@ -10,9 +29,6 @@ class PairwiseInteraction(object):
 
     def d2fdx2(self, x):
         raise NotImplementedError()
-
-    def __call__(self, x):
-        return self.f(x)
 
     # these are only relevant if you have atom-atom distances to calculate
     def pdot_part(self, snapshot, i, j, pdot):
@@ -23,6 +39,7 @@ class PairwiseInteraction(object):
 
 class ConstantInteraction(PairwiseInteraction):
     def __init__(self, value):
+        super(ConstantInteraction, self).__init__()
         self.value = value
 
     def f(self, x):
@@ -36,6 +53,7 @@ class ConstantInteraction(PairwiseInteraction):
 
 class HarmonicOscillatorInteraction(PairwiseInteraction):
     def __init__(self, k, x0):
+        super(HarmonicOscillatorInteraction, self).__init__()
         self.k = k
         self.x0 = x0
 
@@ -51,6 +69,7 @@ class HarmonicOscillatorInteraction(PairwiseInteraction):
 
 class TanhInteraction(PairwiseInteraction):
     def __init__(self, a, V0, R0=0.0):
+        super(TanhInteraction, self).__init__()
         self.a = a
         self.V0 = V0
         self.R0 = R0
@@ -74,6 +93,7 @@ class TanhInteraction(PairwiseInteraction):
 
 class MorseInteraction(PairwiseInteraction):
     def __init__(self, D, beta, x0):
+        super(MorseInteraction, self).__init__()
         self.D = D
         self.beta = beta
         self.x0 = x0
@@ -95,6 +115,7 @@ class MorseInteraction(PairwiseInteraction):
 
 class QuarticInteraction(PairwiseInteraction):
     def __init__(self, A, B, C, D, E0, x0):
+        super(QuarticInteraction, self).__init__()
         x0_2 = x0*x0
         x0_3 = x0_2 * x0
         x0_4 = x0_3 * x0
@@ -120,6 +141,7 @@ class QuarticInteraction(PairwiseInteraction):
 
 class GaussianInteraction(PairwiseInteraction):
     def __init__(self, A, alpha, x0=0.0):
+        super(GaussianInteraction, self).__init__()
         self.A = A
         self.alpha = alpha
         self.x0 = x0
