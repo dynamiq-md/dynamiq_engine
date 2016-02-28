@@ -28,8 +28,9 @@ class PairwiseInteraction(PotentialEnergySurface):
     def d2fdx2(self, x):
         raise NotImplementedError()
 
-    def __call__(self, x): # TODO: call with f(x) or V(snapshot)?
-        return self.f(x)
+    def __call__(self, snapshot): # TODO: call with f(x) or V(snapshot)?
+        return self.V(snapshot)
+        #return self.f(x)
 
     # these are only relevant if you have atom-atom distances to calculate
     def pdot_part(self, snapshot, i, j, pdot):

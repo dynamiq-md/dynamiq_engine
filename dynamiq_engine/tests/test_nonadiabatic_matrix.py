@@ -7,12 +7,8 @@ from dynamiq_engine.nonadiabatic_matrix import *
 class testNonadiabaticMatrix(object):
     def setup(self):
         import dynamiq_engine.potentials as pes
-        self.V1 = pes.OneDimensionalInteractionModel(
-            pes.interactions.HarmonicOscillatorInteraction(k=2.0, x0=0.0)
-        )
-        self.V2 = pes.OneDimensionalInteractionModel(
-            pes.interactions.HarmonicOscillatorInteraction(k=3.0, x0=1.0)
-        )
+        self.V1 = pes.interactions.HarmonicOscillatorInteraction(k=2.0, x0=0.0)
+        self.V2 = pes.interactions.HarmonicOscillatorInteraction(k=3.0, x0=1.0)
         self.numbers_matrix = [[1.5, 2.0], [2.0, 0.0]]
         self.numbers_dict = {(0,0) : 1.5, (0,1) : 2.0, (1,0) : 2.0}
         self.mixed_matrix = [[self.V1, 2.0], [2.0, self.V2]]

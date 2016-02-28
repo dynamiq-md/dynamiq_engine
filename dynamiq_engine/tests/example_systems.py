@@ -14,15 +14,10 @@ class ExampleSystem(object):
         pass
 
 def make_tully():
-    tully_V11 = dynq.potentials.OneDimensionalInteractionModel(
-        dynq.potentials.interactions.TanhInteraction(a=1.6, V0=0.1)
-    )
-    tully_V22 = dynq.potentials.OneDimensionalInteractionModel(
-        dynq.potentials.interactions.TanhInteraction(a=1.6, V0=-0.1)
-    )
-    tully_V12 = dynq.potentials.OneDimensionalInteractionModel(
-        dynq.potentials.interactions.GaussianInteraction(A=0.05, alpha=1.0)
-    )
+    tully_V11 = dynq.potentials.interactions.TanhInteraction(a=1.6, V0=0.1)
+    tully_V22 = dynq.potentials.interactions.TanhInteraction(a=1.6, V0=-0.1)
+    tully_V12 = dynq.potentials.interactions.GaussianInteraction(A=0.05,
+                                                                 alpha=1.0)
     tully_matrix = dynq.NonadiabaticMatrix([[tully_V11, tully_V12],
                                             [tully_V12, tully_V22]])
     tully = dynq.potentials.MMSTHamiltonian(tully_matrix)
@@ -45,9 +40,9 @@ def make_tully():
 tully = make_tully()
 
 def make_anharmonic_morse():
-    potential = dynq.potentials.OneDimensionalInteractionModel(
-        dynq.potentials.interactions.MorseInteraction(D=30.0, beta=0.08, x0=0.5)
-    )
+    potential = dynq.potentials.interactions.MorseInteraction(D=30.0,
+                                                              beta=0.08,
+                                                              x0=0.5)
     integrator = dynq.integrators.CandyRozmus4(dt=0.1, potential=potential)
     anharmonic_morse = ExampleSystem(potential, integrator, np.array([1.0]))
     return anharmonic_morse
@@ -55,11 +50,9 @@ def make_anharmonic_morse():
 anharmonic_morse = make_anharmonic_morse()
 
 def make_ho_2_1():
-    ho = dynq.potentials.interactions.HarmonicOscillatorInteraction(
+    potential = dynq.potentials.interactions.HarmonicOscillatorInteraction(
         k=2.0, x0=1.0
     )
-    potential = dynq.potentials.OneDimensionalInteractionModel(ho)
-    potential = ho
     integrator = dynq.integrators.CandyRozmus4(0.01, potential)
     masses = np.array([0.5])
     return ExampleSystem(potential, integrator, masses)
