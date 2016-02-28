@@ -61,7 +61,6 @@ class testDynamiqEngine(object):
         assert_array_almost_equal(snap.coordinates, loaded.coordinates)
         assert_array_almost_equal(snap.momenta, loaded.momenta)
 
-
     def test_generate_next_frame(self):
         snap = Snapshot(
             coordinates=np.array([1.0]),
@@ -71,4 +70,8 @@ class testDynamiqEngine(object):
         self.engine.current_snapshot = snap
         self.engine.start()
         newsnap = self.engine.generate_next_frame()
-        raise SkipTest
+        ho = exact_ho(time=self.integrator.dt, omega=2.0, m=0.5, x0=1.0,
+                      p0=1.0, q0=1.0)
+        assert_almost_equal(ho['q'], newsnap.coordinates)
+        assert_almost_equal(ho['p'], newsnap.momenta)
+        assert_almost_equal(newsnap, self.engine.current_snapshot)
