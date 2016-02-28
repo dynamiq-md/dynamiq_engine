@@ -29,6 +29,7 @@ class StandardMonodromy(MonodromyHelper):
 
 
     def prepare(self, integrator):
+        super(StandardMonodromy, self).prepare(integrator)
         if self.second_derivatives is None:
             self.second_derivatives = integrator.potential
 
