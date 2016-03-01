@@ -1,13 +1,14 @@
 import numpy as np
 
+
 class NonadiabaticMatrix(object):
     def __init__(self, matrix):
         self.n_electronic_states = len(matrix)
         dct = {}
         for i in range(self.n_electronic_states):
             row = matrix[i]
-            assert (len(row)==self.n_electronic_states), \
-                    "Input matrix not square"
+            assert (len(row) == self.n_electronic_states), \
+                "Input matrix not square"
             for j in range(self.n_electronic_states):
                 elem = row[j]
                 if elem != 0.0:
@@ -18,10 +19,9 @@ class NonadiabaticMatrix(object):
         self.check_entries(dct.values())
         self.set_runnable_entries()
 
-
     @staticmethod
     def check_entries(list_of_entries):
-        pass # TODO: this should verify types
+        pass  # TODO: this should verify types
 
     def keys(self):
         """Keys, assuming we have an upper triangular matrix"""
@@ -39,7 +39,6 @@ class NonadiabaticMatrix(object):
                 self.runnable_entries[key] = val
             else:
                 self._numeric_matrix[key] = val
-
 
     @classmethod
     def from_dictionary(cls, dct, n_electronic_states=None):
@@ -59,19 +58,16 @@ class NonadiabaticMatrix(object):
                 except KeyError:
                     pass
             matrix.append(row_i)
-                
+
         res.matrix = matrix
         res.set_runnable_entries()
         return res
 
-
     def __getitem__(self, label):
         return self.dictionary[label]
-
 
     def numeric_matrix(self, snap):
         matrix = self._numeric_matrix.copy()
         for key in self.runnable_entries.keys():
             matrix[key] = self.runnable_entries[key](snap)
         return matrix
-        
