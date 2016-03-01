@@ -23,13 +23,6 @@ class Snapshot(paths.AbstractSnapshot):
         self.momenta = momenta
         self.topology = topology
         self.is_reversed = is_reversed
-        # set monodromy matrices and action value
-        self._action = None
-        if monodromy is not None:
-            self._Mqq = monodromy[0]
-            self._Mqp = monodromy[1]
-            self._Mpq = monodromy[2]
-            self._Mpp = monodromy[3]
 
     @property
     def velocities(self):
@@ -47,17 +40,6 @@ class Snapshot(paths.AbstractSnapshot):
             topology=self.topology
         )
         return new_snap
-
-    def detach_monodromy(self):
-        """Removes links to monodromy matrices.
-
-        Useful if the already-allocated monodromy matrices will be reused
-        for a later trajectory.
-        """
-        self._Mqq = None
-        self._Mqp = None
-        self._Mpq = None
-        self._Mpp = None
 
     def copy_from(self, other):
         np.copyto(self.coordinates, other.coordinates)
