@@ -6,16 +6,18 @@ import dynamiq_engine.features as features
 
 from openpathsampling.netcdfplus import lazy_loading_attributes
 
+
 @lazy_loading_attributes('_reversed')
 class Snapshot(paths.AbstractSnapshot):
     __features__ = [paths.features.coordinates, features.momenta]
-    def __init__(self, coordinates=None, momenta=None, monodromy=None, 
+
+    def __init__(self, coordinates=None, momenta=None, monodromy=None,
                  is_reversed=False, topology=None, reversed_copy=None):
         """
         Creates a dynq.Snapshot
 
         By default, the monodromy matrices and actions associated with each
-        snapshot are not saved. 
+        snapshot are not saved.
         """
         self.coordinates = coordinates
         self.momenta = momenta
@@ -39,8 +41,8 @@ class Snapshot(paths.AbstractSnapshot):
 
     def copy(self):
         new_snap = Snapshot(
-            coordinates=self.coordinates.copy(), 
-            momenta=self.momenta.copy(), 
+            coordinates=self.coordinates.copy(),
+            momenta=self.momenta.copy(),
             is_reversed=self.is_reversed,
             topology=self.topology
         )
@@ -64,6 +66,7 @@ class Snapshot(paths.AbstractSnapshot):
         self.topology = other.topology
         self.is_reversed = other.is_reversed
 
+
 @lazy_loading_attributes('_reversed')
 class MMSTSnapshot(Snapshot):
     __features__ = [
@@ -72,6 +75,7 @@ class MMSTSnapshot(Snapshot):
         features.electronic_coordinates,
         features.electronic_momenta
     ]
+
     def __init__(self, coordinates=None, momenta=None, monodromy=None,
                  electronic_coordinates=None, electronic_momenta=None,
                  is_reversed=False, topology=None, reversed_copy=None):
@@ -114,13 +118,14 @@ class Topology(paths.Topology):
         return self._inverse_masses
 
     def subset(self, list_of_atoms):
-        return self # pragma: no cover
+        return self  # pragma: no cover
+
 
 class DynamiqEngine(paths.DynamicsEngine):
     default_options = {
-        'integ' : None,
-        'n_frames_max' : None,
-        'nsteps_per_frame' : 1
+        'integ': None,
+        'n_frames_max': None,
+        'nsteps_per_frame': 1
     }
 
     base_snapshot_type = Snapshot
@@ -146,7 +151,7 @@ class DynamiqEngine(paths.DynamicsEngine):
 
     def generate_next_frame(self):
         # TODO: add support for n_steps_per_frame
-        self.integrator.step(potential=self.potential, 
+        self.integrator.step(potential=self.potential,
                              old_snap=self._current_snapshot,
                              new_snap=self._current_snapshot)
         return self.current_snapshot
