@@ -123,7 +123,7 @@ class CandyRozmus4(Integrator):
         self.local_S -= self._b_k[k]*potential.V(snap)
         snap.action = self.local_S
 
-    def step(self, potential, old_snap, new_snap):
+    def step(self, potential, old_snap=None, new_snap=None):
         new_snap.copy_from(old_snap)
         for k in range(4):
             for update in self.update_steps:
