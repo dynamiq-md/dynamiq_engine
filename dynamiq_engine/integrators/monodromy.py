@@ -14,10 +14,14 @@ import numpy as np
 # ensure that we get the right thing.
 class MonodromyHelper(object):
     def prepare(self, integrator):
+        self.n_dim = integrator.potential.n_dofs 
         pass
 
     def reset(self, initial_snapshot):
-        pass
+        try:
+            initial_snapshot.Mqq.fill(0.0)
+        except AttributeError:
+            initial_snapshot.Mqq = np.zeros((self.n_dim, self.n_dim))
 
 class StandardMonodromy(MonodromyHelper):
     _my_feature = [ ]
@@ -33,7 +37,7 @@ class StandardMonodromy(MonodromyHelper):
         if self.second_derivatives is None:
             self.second_derivatives = integrator.potential
 
-        n_dim = integrator.potential.n_dofs
+        n_dim = self.n_dim
         self._local_dMqq_dt = np.zeros((n_dim, n_dim))
         self._local_dMqp_dt = np.zeros((n_dim, n_dim))
         self._local_dMpq_dt = np.zeros((n_dim, n_dim))
