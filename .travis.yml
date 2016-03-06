@@ -6,11 +6,11 @@ python:
 install:
     - deactivate
     - source devtools/ci/install_conda.sh
-    - conda clean -pltis --yes
     - export PYTHONUNBUFFERED=true
 
 script:
     - conda install --yes conda-build
+    - conda clean -pltis --yes
     - conda build devtools/conda-recipe
     
     - source activate _test
