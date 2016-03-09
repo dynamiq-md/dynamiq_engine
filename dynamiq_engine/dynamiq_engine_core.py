@@ -14,8 +14,9 @@ Snapshot = peng.SnapshotFactory(
     features=[
         peng.features.coordinates,
         peng.features.xyz,
-        features.momenta#,
-        #features.topology
+        features.momenta,
+        features.velocities,
+        peng.features.topology
     ],
     description="Simple snapshot for dynamiq.",
     base_class=peng.BaseSnapshot
@@ -27,8 +28,10 @@ MMSTSnapshot = peng.SnapshotFactory(
         peng.features.coordinates,
         peng.features.xyz,
         features.momenta,
+        features.velocities,
         features.electronic_momenta,
-        features.electronic_coordinates
+        features.electronic_coordinates,
+        peng.features.topology
     ],
     description="Simple snapshot for MMST-based dynamics.",
     base_class=peng.BaseSnapshot
