@@ -6,7 +6,7 @@ from dynamiq_engine.integrators.monodromy import *
 
 import dynamiq_engine.potentials as pes
 from example_systems import ho_2_1, tully
-import openpathsampling.features as paths_f
+import openpathsampling.engines.features as paths_f
 import dynamiq_engine.features as dynq_f
 
 class testStandardMonodromy(object):
