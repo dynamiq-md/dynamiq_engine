@@ -29,12 +29,12 @@ class testCandyRozmus4(object):
 
     @raises(RuntimeError)
     def test_prepare_bad_feature_error(self):
-        import openpathsampling.features as paths_f
-        self.integ.prepare([paths_f.coordinates, paths_f.configuration])
+        import openpathsampling.engines.features as paths_f
+        self.integ.prepare([paths_f.coordinates, paths_f.velocities])
     
     def test_cr4_step(self):
         from dynamiq_engine.features import momenta as f_momenta
-        from openpathsampling.features import coordinates as f_coordinates
+        from openpathsampling.engines.features import coordinates as f_coordinates
         self.integ.prepare([f_coordinates, f_momenta])
         new_snap = dynq.Snapshot(coordinates=np.array([0.0]),
                                  momenta=np.array([0.0]),
@@ -63,7 +63,7 @@ class testCandyRozmus4(object):
         assert_array_almost_equal(new_snap.momenta, exact_0x10['p'])
 
     def test_action(self):
-        import openpathsampling.features as paths_f
+        import openpathsampling.engines.features as paths_f
         import dynamiq_engine.features as dynq_f
         self.integ.prepare([paths_f.coordinates, dynq_f.momenta,
                             dynq_f.action])
@@ -96,7 +96,7 @@ class testCandyRozmus4MMST(object):
         )
         uncoupled_integ = CandyRozmus4MMST(0.01, uncoupled)
         import dynamiq_engine.features as dynq_f
-        import openpathsampling.features as paths_f
+        import openpathsampling.engines.features as paths_f
         uncoupled_integ.prepare([paths_f.coordinates, dynq_f.momenta,
                                  dynq_f.electronic_coordinates,
                                  dynq_f.electronic_momenta,
@@ -170,7 +170,7 @@ class testCandyRozmus4MMST(object):
 
         tully_integ = CandyRozmus4MMST(1.0, tully) # not default dt
         import dynamiq_engine.features as dynq_f
-        import openpathsampling.features as paths_f
+        import openpathsampling.engines.features as paths_f
         tully_integ.prepare([paths_f.coordinates, dynq_f.momenta,
                              dynq_f.electronic_coordinates,
                              dynq_f.electronic_momenta,

@@ -32,18 +32,23 @@ class CandyRozmus4(Integrator):
 
     def prepare(self, feature_list):
         import dynamiq_engine.features as dynq_f
-        import openpathsampling.features as paths_f
+        import openpathsampling.engines.features as paths_f
         self.feature_list = feature_list
         # TODO: get another integrator to support electronic dofs; I don't
         # think this one tehcnically should
         supported_features = [
             paths_f.coordinates,
+            paths_f.xyz,
+            paths_f.topology,
             dynq_f.momenta,
+            dynq_f.velocities,
             dynq_f.action,
             dynq_f.electronic_coordinates,
             dynq_f.electronic_momenta
             # TODO: add support for monodromy or for prefactor
         ]
+        #print self.feature_list
+        #print supported_features
         for f in self.feature_list:
             if f not in supported_features:
                 raise RuntimeError("Feature " + str(f) +
@@ -124,7 +129,8 @@ class CandyRozmus4(Integrator):
         snap.action = self.local_S
 
     def step(self, potential, old_snap=None, new_snap=None):
-        new_snap.copy_from(old_snap)
+        old_snap.copy_to(new_snap)
+        #new_snap.copy_from(old_snap)
         for k in range(4):
             for update in self.update_steps:
                 update(potential, new_snap, k)
@@ -137,7 +143,7 @@ class CandyRozmus4MMST(CandyRozmus4):
         self.local_electronic_dHdp = np.zeros(potential.n_electronic_states)
         self.local_electronic_dHdq = np.zeros(potential.n_electronic_states)
         import dynamiq_engine.features as dynq_f
-        import openpathsampling.features as paths_f
+        import openpathsampling.engines.features as paths_f
         self.prepare([paths_f.coordinates, dynq_f.momenta,
                       dynq_f.electronic_coordinates,
                       dynq_f.electronic_momenta])

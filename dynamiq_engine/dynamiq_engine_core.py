@@ -178,7 +178,7 @@ class DynamiqEngine(peng.DynamicsEngine):
         self._current_snapshot = snap.copy()
 
     def start(self):
-        features = self.template.__features__
+        features = self.template.__features__['classes']
         self.integrator.prepare(features)
 
     def generate_next_frame(self):
