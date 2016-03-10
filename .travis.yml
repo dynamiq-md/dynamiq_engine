@@ -13,6 +13,8 @@ script:
     - conda build devtools/conda-recipe
     
     - source activate _test
+    - conda clean -pltis --yes
+    - python -c "import openpathsampling; print 'OPS version' + openpathsampling.version.full_version"
     - nosetests -v --with-coverage
 
 after_success:

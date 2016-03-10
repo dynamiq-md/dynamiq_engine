@@ -4,7 +4,7 @@ import numpy as np
 import math
 
 import dynamiq_engine.features as dynq_f
-import openpathsampling.features as paths_f
+import openpathsampling.engines.features as paths_f
 
 class CandyRozmus4(Integrator):
     """Fourth-order integrator by Candy and Rozmus.
@@ -42,7 +42,9 @@ class CandyRozmus4(Integrator):
     _feature_type = {
         'coordinates' : [paths_f.coordinates, dynq_f.electronic_coordinates],
         'momenta' : [dynq_f.momenta, dynq_f.electronic_momenta],
-        'trajectory' : [dynq_f.action] 
+        'trajectory' : [dynq_f.action],
+		'misc' : [paths_f.xyz, paths_f.topology,
+                  dynq_f.velocities]
         # TODO: support for monodromy, prefactor, etc
     }
     def prepare(self, feature_list):
@@ -138,7 +140,8 @@ class CandyRozmus4(Integrator):
     def step(self, potential, old_snap=None, new_snap=None):
         # the actual struture of the steps is in self.update_steps, which is
         # set in self.prepare()
-        new_snap.copy_from(old_snap)
+        old_snap.copy_to(new_snap)
+        #new_snap.copy_from(old_snap)
         for k in range(4):
             for update in self.update_steps:
                 update(potential, new_snap, k)
@@ -151,7 +154,7 @@ class CandyRozmus4MMST(CandyRozmus4):
         self.local_electronic_dHdp = np.zeros(potential.n_electronic_states)
         self.local_electronic_dHdq = np.zeros(potential.n_electronic_states)
         import dynamiq_engine.features as dynq_f
-        import openpathsampling.features as paths_f
+        import openpathsampling.engines.features as paths_f
         self.prepare([paths_f.coordinates, dynq_f.momenta,
                       dynq_f.electronic_coordinates,
                       dynq_f.electronic_momenta])
