@@ -1,6 +1,7 @@
 import dynamiq_engine as dynq
 import numpy as np
 from tools import *
+import copy
 
 from dynamiq_engine.integrators.candy_rozmus_4 import *
 import dynamiq_engine.potentials as pes
@@ -166,7 +167,7 @@ class testCandyRozmus4MMST(object):
         # test Tully
         from example_systems import tully as tully_example
         tully = tully_example.potential
-        tully_snapshot = tully_example.snapshots[0].copy()
+        tully_snapshot = copy.deepcopy(tully_example.snapshots[0])
 
         tully_integ = CandyRozmus4MMST(1.0, tully) # not default dt
         import dynamiq_engine.features as dynq_f

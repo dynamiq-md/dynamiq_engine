@@ -4,6 +4,7 @@ import openpathsampling as paths
 import numpy as np
 import dynamiq_engine.features as features
 import openpathsampling.engines as peng
+import copy
 
 
 
@@ -175,7 +176,7 @@ class DynamiqEngine(peng.DynamicsEngine):
 
     @current_snapshot.setter
     def current_snapshot(self, snap):
-        self._current_snapshot = snap.copy()
+        self._current_snapshot = copy.deepcopy(snap)
 
     def start(self):
         features = self.template.__features__['classes']
