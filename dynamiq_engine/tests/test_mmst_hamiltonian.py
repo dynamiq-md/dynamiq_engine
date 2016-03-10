@@ -2,6 +2,7 @@ import dynamiq_engine as dynq
 import dynamiq_engine.potentials as pes
 import numpy as np
 from tools import *
+import copy
 
 from dynamiq_engine.potentials.mmst_hamiltonian import *
 
@@ -9,7 +10,7 @@ class testMMSTHamiltonian(object):
     def setup(self):
         from example_systems import tully
         self.tully = tully.potential
-        self.tully_snap = tully.snapshots[0].copy()
+        self.tully_snap = copy.deepcopy(tully.snapshots[0])
         # [x0, x1, R] = [0.7, 0.6, 0.1]
         # [p0, p1, P] = [0.2, 0.1, 19.0]
         # tully_V11(tully_snap) = 0.1*tanh(1.6*0.1) = 0.0158648504297499
