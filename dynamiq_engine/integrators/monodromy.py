@@ -1,4 +1,4 @@
-import openpathsampling.features as paths_f
+import openpathsampling.engines.features as paths_f
 import dynamiq_engine.features as dynq_f
 import dynamiq_engine as dynq
 import numpy as np
