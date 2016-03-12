@@ -13,6 +13,7 @@ import numpy as np
 # integrator know which way to do things. Use supported features on each to
 # ensure that we get the right thing.
 class MonodromyHelper(object):
+    monodromy_type = None
     def prepare(self, integrator):
         self.n_dim = integrator.potential.n_dofs 
         pass
@@ -25,6 +26,8 @@ class MonodromyHelper(object):
 
 class StandardMonodromy(MonodromyHelper):
     _my_feature = [ ]
+    monodromy_type = "dt"
+
     def __init__(self, second_derivatives=None):
         self.second_derivatives = second_derivatives
         # second derivatives allows us to override, for example, the
@@ -81,6 +84,7 @@ class StandardMonodromy(MonodromyHelper):
 
 
 class FiniteDifferenceMonodromy(MonodromyHelper):
+    monodromy_type = "fd"
     def __init__(self, deltas=None):
         pass
 
