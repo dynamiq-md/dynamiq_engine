@@ -34,11 +34,26 @@ class testStandardMonodromy(object):
         for matrix in [mono._local_Hpq, mono._local_Hqp]:
             assert_equal(matrix, None)
 
+    def test_reset(self):
+        # check that the snapshot has the monodromy matrix
+        # check that reset sets it correctly
+        raise SkipTest
+
     def test_dMqq_dt(self):
         self.integ.prepare([paths_f.coordinates, dynq_f.momenta])
         self.monodromy.prepare(self.integ)
         self.integ.reset(self.snap0)
         #dMqq_dt = self.monodromy.dMqq_dt(self.potential, self.snap0)
+        raise SkipTest
+
+    def test_dMqp_dt(self):
+        raise SkipTest
+
+    def test_dMpq_dt(self):
+        raise SkipTest
+
+    def test_dMpp_dt(self):
+        raise SkipTest
 
 
 class testStandardMonodromyMMST(object):

@@ -21,11 +21,16 @@ class MonodromyHelper(object):
     def reset(self, initial_snapshot):
         try:
             initial_snapshot.Mqq.fill(0.0)
-        except AttributeError:
+            initial_snapshot.Mpp.fill(0.0)
+            initial_snapshot.Mqp.fill(0.0)
+            initial_snapshot.Mpq.fill(0.0)
+        except AttributeError: # TODO: scratch this part?
             initial_snapshot.Mqq = np.zeros((self.n_dim, self.n_dim))
+            initial_snapshot.Mpp = np.zeros((self.n_dim, self.n_dim))
+            initial_snapshot.Mqp = np.zeros((self.n_dim, self.n_dim))
+            initial_snapshot.Mpq = np.zeros((self.n_dim, self.n_dim))
 
 class StandardMonodromy(MonodromyHelper):
-    _my_feature = [ ]
     monodromy_type = "dt"
 
     def __init__(self, second_derivatives=None):
