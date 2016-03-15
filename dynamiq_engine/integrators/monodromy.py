@@ -5,10 +5,12 @@ import numpy as np
 # NOTE: there are two ways to calculate the monodromy matrix: either you
 # calculate it in some form of M = M + dM/dt*t, or you calculate it directly
 # (by finite difference or by M(t0, t2) = M(t0,t1) * M(t1,t2)). 
-# Actually, this should be 3 ways, with different features to be seen:
-#   1. `dt_monodromy`
-#   2. `fd_monodromy`
-#   3. `local_monodromy`
+# Actually, this should be 3 ways, with different `monodromy_type`s in the
+# specific `MonodromyHelper`s:
+#   1. `dt`
+#   2. `fd`
+#   3. `local` # note to self: WTF was this? predates monodromy_type, when 
+#              #               I thought these were different features
 # All of these also create `monodromy`, but the existence of each lets the
 # integrator know which way to do things. Use supported features on each to
 # ensure that we get the right thing.

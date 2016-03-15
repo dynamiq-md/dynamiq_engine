@@ -7,7 +7,14 @@ from dynamiq_engine.integrators.monodromy import *
 import dynamiq_engine.potentials as pes
 from example_systems import ho_2_1, tully
 import openpathsampling.engines.features as paths_f
+import openpathsampling.engines as peng
 import dynamiq_engine.features as dynq_f
+
+MonodromySnapshot = peng.SnapshotFactory(
+    name="MonodromySnapshot",
+    features=[paths_f.coordinates, dynq_f.momenta, dynq_f.monodromy,
+              paths_f.topology]
+)
 
 class testStandardMonodromy(object):
     def setup(self):
@@ -16,7 +23,7 @@ class testStandardMonodromy(object):
         self.topology = ho_2_1.topology
         self.integ = ho_2_1.integrator
 
-        self.snap0 = dynq.Snapshot(
+        self.snap0 = MonodromySnapshot(
             coordinates=np.array([1.0]),
             momenta=np.array([1.0]),
             topology=self.topology
