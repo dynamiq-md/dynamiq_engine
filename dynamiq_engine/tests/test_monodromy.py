@@ -61,8 +61,16 @@ class testStandardMonodromy(object):
         assert_equal(fresh_snap.Mpp, np.array([[1.0]]))
         assert_equal(fresh_snap.Mqp, np.array([[0.0]]))
         assert_equal(fresh_snap.Mpq, np.array([[0.0]]))
-        # TODO: change it, check that resetting goes back
-        raise SkipTest
+        # switch it elsewhere
+        fresh_snap.Mqq = np.array([[2.0]])
+        fresh_snap.Mqp = np.array([[3.0]])
+        fresh_snap.Mpq = np.array([[4.0]])
+        fresh_snap.Mpp = np.array([[5.0]])
+        self.monodromy.reset(fresh_snap)
+        assert_equal(fresh_snap.Mqq, np.array([[1.0]]))
+        assert_equal(fresh_snap.Mpp, np.array([[1.0]]))
+        assert_equal(fresh_snap.Mqp, np.array([[0.0]]))
+        assert_equal(fresh_snap.Mpq, np.array([[0.0]]))
 
     def test_dMqq_dt(self):
         self.integ.prepare([paths_f.coordinates, dynq_f.momenta])
