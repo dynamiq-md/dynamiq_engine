@@ -21,14 +21,19 @@ class MonodromyHelper(object):
         pass
 
     def reset(self, initial_snapshot):
-        try:
+        # we use Mqq as a proxy for the whole monodromy matrix: Mqq is only
+        # not None if all of them are not
+        if initial_snapshot.Mqq is not None:
             initial_snapshot.Mqq.fill(0.0)
             initial_snapshot.Mpp.fill(0.0)
+            for i in range(self.n_dim):
+                initial_snapshot.Mqq[(i,i)] = 1.0
+                initial_snapshot.Mpp[(i,i)] = 1.0
             initial_snapshot.Mqp.fill(0.0)
             initial_snapshot.Mpq.fill(0.0)
-        except AttributeError: # TODO: scratch this part?
-            initial_snapshot.Mqq = np.zeros((self.n_dim, self.n_dim))
-            initial_snapshot.Mpp = np.zeros((self.n_dim, self.n_dim))
+        else:
+            initial_snapshot.Mqq = np.identity(self.n_dim)
+            initial_snapshot.Mpp = np.identity(self.n_dim)
             initial_snapshot.Mqp = np.zeros((self.n_dim, self.n_dim))
             initial_snapshot.Mpq = np.zeros((self.n_dim, self.n_dim))
 

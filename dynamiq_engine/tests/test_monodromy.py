@@ -23,6 +23,8 @@ class testStandardMonodromy(object):
         self.topology = ho_2_1.topology
         self.integ = ho_2_1.integrator
 
+        self.monodromy.prepare(self.integ)
+
         self.snap0 = MonodromySnapshot(
             coordinates=np.array([1.0]),
             momenta=np.array([1.0]),
@@ -30,10 +32,10 @@ class testStandardMonodromy(object):
         )
 
     def test_prepare(self):
-        self.monodromy.prepare(self.integ)
-        assert_equal(self.monodromy.second_derivatives.cross_terms, False)
-        assert_equal(self.monodromy.second_derivatives, self.potential)
-        mono = self.monodromy  # to simplify names
+        mono = StandardMonodromy()
+        mono.prepare(self.integ)
+        assert_equal(mono.second_derivatives.cross_terms, False)
+        assert_equal(mono.second_derivatives, self.potential)
         for matrix in [mono._local_dMqq_dt, mono._local_dMqp_dt,
                        mono._local_dMpq_dt, mono._local_dMpp_dt,
                        mono._local_Hpp, mono._local_Hqq]:
@@ -42,8 +44,24 @@ class testStandardMonodromy(object):
             assert_equal(matrix, None)
 
     def test_reset(self):
-        # check that the snapshot has the monodromy matrix
+        fresh_snap = MonodromySnapshot(
+            coordinates=np.array([1.0]),
+            momenta=np.array([1.0]),
+            topology=self.topology
+        )
+        # check that the snapshot has the monodromy feature, although the
+        # matrix itself is unset
+        assert_equal(fresh_snap.Mqq, None)
+        assert_equal(fresh_snap.Mqp, None)
+        assert_equal(fresh_snap.Mpq, None)
+        assert_equal(fresh_snap.Mpp, None)
         # check that reset sets it correctly
+        self.monodromy.reset(fresh_snap)
+        assert_equal(fresh_snap.Mqq, np.array([[1.0]]))
+        assert_equal(fresh_snap.Mpp, np.array([[1.0]]))
+        assert_equal(fresh_snap.Mqp, np.array([[0.0]]))
+        assert_equal(fresh_snap.Mpq, np.array([[0.0]]))
+        # TODO: change it, check that resetting goes back
         raise SkipTest
 
     def test_dMqq_dt(self):
