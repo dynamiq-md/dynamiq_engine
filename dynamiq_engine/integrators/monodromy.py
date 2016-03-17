@@ -9,8 +9,7 @@ import numpy as np
 # specific `MonodromyHelper`s:
 #   1. `dt`
 #   2. `fd`
-#   3. `local` # note to self: WTF was this? predates monodromy_type, when 
-#              #               I thought these were different features
+#   3. `local` (as with G&L's unitary propagation)
 # All of these also create `monodromy`, but the existence of each lets the
 # integrator know which way to do things. Use supported features on each to
 # ensure that we get the right thing.
@@ -108,6 +107,7 @@ class FiniteDifferenceMonodromy(MonodromyHelper):
 
 
 class GarashchukLightMonodromy(FiniteDifferenceMonodromy):
+    monodromy_type = "local"
     def __init__(self, deltas=None):
         pass
 

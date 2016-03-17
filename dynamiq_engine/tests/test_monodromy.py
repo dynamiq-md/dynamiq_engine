@@ -16,6 +16,13 @@ MonodromySnapshot = peng.SnapshotFactory(
               paths_f.topology]
 )
 
+MonodromyMMSTSnapshot = peng.SnapshotFactory(
+    name="MonodromySnapshot",
+    features=[paths_f.coordinates, dynq_f.momenta, 
+              dynq_f.electronic_coordinates, dynq_f.electronic_momenta,
+              dynq_f.monodromy, paths_f.topology]
+)
+
 class testStandardMonodromy(object):
     def setup(self):
         self.morse_potential = anharmonic_morse.potential
@@ -26,11 +33,28 @@ class testStandardMonodromy(object):
         self.morse_integ.prepare([paths_f.coordinates, dynq_f.momenta,
                                   dynq_f.monodromy])
         self.morse_monodromy.prepare(self.morse_integ)
-
         self.morse_snap0 = MonodromySnapshot(
             coordinates=np.array([1.0]),
             momenta=np.array([1.0]),
             topology=self.morse_topology
+        )
+
+        self.tully_potential = tully.potential
+        self.tully_topology = tully.topology
+        self.tully_integ = tully.integrator
+        self.tully_monodromy = StandardMonodromy()
+        self.tully_integ.helpers = [self.tully_monodromy]
+        self.tully_integ.prepare([paths_f.coordinates, dynq_f.momenta,
+                                  dynq_f.electronic_coordinates,
+                                  dynq_f.electronic_momenta,
+                                  dynq_f.monodromy])
+        self.tully_monodromy.prepare(self.tully_integ)
+        self.tully_snap0 = MonodromyMMSTSnapshot(
+            coordinates=np.array([0.1]),
+            momenta=np.array([19.0]),
+            electronic_coordinates=np.array([0.7, 0.6]),
+            electronic_momenta=np.array([0.2, 0.1]),
+            topology=self.tully_topology,
         )
 
     def test_prepare(self):
@@ -79,7 +103,12 @@ class testStandardMonodromy(object):
         dMqq_dt = self.morse_monodromy.dMqq_dt(self.morse_potential,
                                                self.morse_snap0)
         assert_equal(dMqq_dt.tolist(), [[0.0]])
-        raise SkipTest
+        
+        self.tully_integ.reset(self.tully_snap0)
+        dMqq_dt = self.tully_monodromy.dMqq_dt(self.tully_potential,
+                                               self.tully_snap0)
+        d2Hdpdq = self.tully_potential.d2Hdpdq(self.tully_snap0)
+        assert_array_almost_equal(dMqq_dt.tolist(), d2Hdpdq)
 
     def test_dMqp_dt(self):
         raise SkipTest
