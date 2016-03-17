@@ -5,7 +5,7 @@ from tools import *
 from dynamiq_engine.integrators.monodromy import *
 
 import dynamiq_engine.potentials as pes
-from example_systems import ho_2_1, tully
+from example_systems import anharmonic_morse, tully
 import openpathsampling.engines.features as paths_f
 import openpathsampling.engines as peng
 import dynamiq_engine.features as dynq_f
@@ -18,24 +18,26 @@ MonodromySnapshot = peng.SnapshotFactory(
 
 class testStandardMonodromy(object):
     def setup(self):
-        self.monodromy = StandardMonodromy()
-        self.potential = ho_2_1.potential
-        self.topology = ho_2_1.topology
-        self.integ = ho_2_1.integrator
+        self.morse_potential = anharmonic_morse.potential
+        self.morse_topology = anharmonic_morse.topology
+        self.morse_monodromy = StandardMonodromy()
+        self.morse_integ = anharmonic_morse.integrator
+        self.morse_integ.helpers = [self.morse_monodromy]
+        self.morse_integ.prepare([paths_f.coordinates, dynq_f.momenta,
+                                  dynq_f.monodromy])
+        self.morse_monodromy.prepare(self.morse_integ)
 
-        self.monodromy.prepare(self.integ)
-
-        self.snap0 = MonodromySnapshot(
+        self.morse_snap0 = MonodromySnapshot(
             coordinates=np.array([1.0]),
             momenta=np.array([1.0]),
-            topology=self.topology
+            topology=self.morse_topology
         )
 
     def test_prepare(self):
         mono = StandardMonodromy()
-        mono.prepare(self.integ)
+        mono.prepare(self.morse_integ)
         assert_equal(mono.second_derivatives.cross_terms, False)
-        assert_equal(mono.second_derivatives, self.potential)
+        assert_equal(mono.second_derivatives, self.morse_potential)
         for matrix in [mono._local_dMqq_dt, mono._local_dMqp_dt,
                        mono._local_dMpq_dt, mono._local_dMpp_dt,
                        mono._local_Hpp, mono._local_Hqq]:
@@ -47,7 +49,7 @@ class testStandardMonodromy(object):
         fresh_snap = MonodromySnapshot(
             coordinates=np.array([1.0]),
             momenta=np.array([1.0]),
-            topology=self.topology
+            topology=self.morse_topology
         )
         # check that the snapshot has the monodromy feature, although the
         # matrix itself is unset
@@ -56,7 +58,7 @@ class testStandardMonodromy(object):
         assert_equal(fresh_snap.Mpq, None)
         assert_equal(fresh_snap.Mpp, None)
         # check that reset sets it correctly
-        self.monodromy.reset(fresh_snap)
+        self.morse_monodromy.reset(fresh_snap)
         assert_equal(fresh_snap.Mqq, np.array([[1.0]]))
         assert_equal(fresh_snap.Mpp, np.array([[1.0]]))
         assert_equal(fresh_snap.Mqp, np.array([[0.0]]))
@@ -66,17 +68,17 @@ class testStandardMonodromy(object):
         fresh_snap.Mqp = np.array([[3.0]])
         fresh_snap.Mpq = np.array([[4.0]])
         fresh_snap.Mpp = np.array([[5.0]])
-        self.monodromy.reset(fresh_snap)
+        self.morse_monodromy.reset(fresh_snap)
         assert_equal(fresh_snap.Mqq, np.array([[1.0]]))
         assert_equal(fresh_snap.Mpp, np.array([[1.0]]))
         assert_equal(fresh_snap.Mqp, np.array([[0.0]]))
         assert_equal(fresh_snap.Mpq, np.array([[0.0]]))
 
     def test_dMqq_dt(self):
-        self.integ.prepare([paths_f.coordinates, dynq_f.momenta])
-        self.monodromy.prepare(self.integ)
-        self.integ.reset(self.snap0)
-        #dMqq_dt = self.monodromy.dMqq_dt(self.potential, self.snap0)
+        self.morse_integ.reset(self.morse_snap0)
+        dMqq_dt = self.morse_monodromy.dMqq_dt(self.morse_potential,
+                                               self.morse_snap0)
+        assert_equal(dMqq_dt.tolist(), [[0.0]])
         raise SkipTest
 
     def test_dMqp_dt(self):

@@ -19,7 +19,7 @@ class CandyRozmus4(Integrator):
     [1] Candy & Rozmus
     [2] Manolopoulos
     """
-    def __init__(self, dt, potential, n_frames=1):
+    def __init__(self, dt, potential, n_frames=1, helpers=None):
         super(CandyRozmus4, self).__init__(dt)
         self._a_k = [
             0.5*(1.0 - 1.0/math.sqrt(3.0))*self.dt,
@@ -38,13 +38,17 @@ class CandyRozmus4(Integrator):
         self.potential = potential
         self.local_dHdq = np.zeros(n_spatial * n_atoms)
         self.local_dHdp = np.zeros(n_spatial * n_atoms)
+        if helpers is None:
+            self.helpers = []
+        else:
+            self.helpers = helpers
 
     _feature_type = {
         'coordinates' : [paths_f.coordinates, dynq_f.electronic_coordinates],
         'momenta' : [dynq_f.momenta, dynq_f.electronic_momenta],
         'trajectory' : [dynq_f.action],
-		'misc' : [paths_f.xyz, paths_f.topology,
-                  dynq_f.velocities]
+        'misc' : [paths_f.xyz, paths_f.topology, dynq_f.velocities,
+                  dynq_f.monodromy]
         # TODO: support for monodromy, prefactor, etc
     }
     def prepare(self, feature_list):
@@ -91,6 +95,8 @@ class CandyRozmus4(Integrator):
 
     def reset(self, snapshot):
         # TODO: move to superclass
+        for helper in self.helpers:
+            helper.reset(snapshot)
         if dynq_f.action in self.feature_list:
             self.local_S = 0.0
         pass
