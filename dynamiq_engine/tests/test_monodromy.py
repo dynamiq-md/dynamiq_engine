@@ -125,6 +125,14 @@ class testStandardMonodromyMMST(object):
             electronic_momenta=np.array([0.2, 0.1]),
             topology=self.topology,
         )
+        # Hqq = [[0.01586485,  0.04950249,  0.10324073],
+        #        [0.04950249, -0.01586485, -0.10051409],
+        #        [0.10324073, -0.10051409, -0.04902564]]
+        # Hqp = [[0, 0, 0], [0, 0, 0], [0.03020453, -0.01757739, 0]]
+        # Hpq = [[0, 0, 0.03020453], [0, 0, -0.01757739], [0, 0, 0]]
+        # Hpp = [[0.01586485, 0.04950249, 0],
+        #        [0.04950249, -0.01586485, 0],
+        #        [0, 0, 0.00050505]]
         self.fixed_monodromy_3D = (np.array([[1.0, 2.0, 3.0],
                                              [4.0, 5.0, 6.0],
                                              [7.0, 8.0, 9.0]]),
@@ -152,9 +160,24 @@ class testStandardMonodromyMMST(object):
                                                         [0.0, 0.0, 0.0]]))
 
     def test_dMqq_dt(self):
+        # dMqq/dt = Hpq . Mqq + Hpp . Mpq
         self.integ.reset(self.snap0)
         dMqq_dt = self.monodromy.dMqq_dt(self.potential, self.snap0)
         d2Hdpdq = self.potential.d2Hdpdq(self.snap0)
         # Mpq = 0; Mpp = 1 => dMqq/dt = Hpq 
         assert_array_almost_equal(dMqq_dt, d2Hdpdq)
+
+        # dMqq/dt = np.dot(Hpq, Mqq) + np.dot(Hpp, Mpq)
+        #         = np.array([[ 0.43837999,  0.53395186,  0.62952373],
+        #                     [-0.13027111, -0.11421086, -0.09815061],
+        #                     [ 0.00363636,  0.00414141,  0.00464646]])
+        snap = self.snap0
+        (snap.Mqq, snap.Mqp, snap.Mpq, snap.Mpp) = self.fixed_monodromy_3D
+        dMqq_dt = self.monodromy.dMqq_dt(self.potential, snap)
+        assert_array_almost_equal(
+            dMqq_dt, 
+            np.array([[ 0.43837999,  0.53395186,  0.62952373],
+                      [-0.13027111, -0.11421086, -0.09815061],
+                      [ 0.00363636,  0.00414141,  0.00464646]])
+        )
         
