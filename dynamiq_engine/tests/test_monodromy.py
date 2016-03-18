@@ -34,10 +34,12 @@ class testStandardMonodromy(object):
                             dynq_f.monodromy])
         self.monodromy.prepare(self.integ)
         self.snap0 = MonodromySnapshot(
-            coordinates=np.array([1.0]),
+            coordinates=np.array([0.0]),
             momenta=np.array([1.0]),
             topology=self.topology
         )
+        # Hpp = [[5.0]]
+        # Hqq = [[-0.203886208716337]]
 
         self.fixed_monodromy_1D = (np.array([[2.0]]), np.array([[3.0]]),
                                    np.array([[4.0]]), np.array([[5.0]]))
@@ -97,12 +99,24 @@ class testStandardMonodromy(object):
         assert_equal(dMqq_dt.tolist(), [[20.0]])
 
     def test_dMqp_dt(self):
+        # dMqp/dt = Hpq * Mqp + Hpp * Mpp
+        #         = Hpp * Mpp
+        # first   = 5.0
+        # fixed   = 5.0 * 5.0 = 25.0
         raise SkipTest
 
     def test_dMpq_dt(self):
+        # dMpq/dt = -Hqq * Mqq - Hqp * Mpq
+        #         = -Hqq * Mqq
+        # first   = -(-0.203886208716337) = 0.203886208716337
+        # fixed   = -(-0.203886208716337) * 2.0 = 0.407772417432674
         raise SkipTest
 
     def test_dMpp_dt(self):
+        # dMpp/dt = -Hqq * Mqp - Hqp * Mpp
+        #         = -Hqq * Mqp
+        # first   = 0.0
+        # fixed   = -(-0.203886208716337) * 3.0 = 0.611658626149011
         raise SkipTest
 
 
@@ -180,4 +194,12 @@ class testStandardMonodromyMMST(object):
                       [-0.13027111, -0.11421086, -0.09815061],
                       [ 0.00363636,  0.00414141,  0.00464646]])
         )
-        
+    
+    def test_dMqp_dt(self):
+        raise SkipTest
+
+    def test_dMpq_dt(self):
+        raise SkipTest
+    
+    def test_dMpp_dt(self):
+        raise SkipTest
