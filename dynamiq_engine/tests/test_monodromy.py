@@ -57,6 +57,22 @@ class testStandardMonodromy(object):
             topology=self.tully_topology,
         )
 
+        self.fixed_monodromy_1D = (np.array([[2.0]]), np.array([[3.0]]),
+                                   np.array([[4.0]]), np.array([[5.0]]))
+        self.fixed_monodromy_3D = (np.array([[1.0, 2.0, 3.0],
+                                             [4.0, 5.0, 6.0],
+                                             [7.0, 8.0, 9.0]]),
+                                   np.array([[1.1, 2.1, 3.1],
+                                             [4.1, 5.1, 6.1],
+                                             [7.1, 8.1, 9.1]]),
+                                   np.array([[1.2, 2.2, 3.2],
+                                             [4.2, 5.2, 6.2],
+                                             [7.2, 8.2, 9.2]]),
+                                   np.array([[1.3, 2.3, 3.3],
+                                             [4.3, 5.3, 6.3],
+                                             [7.3, 8.3, 9.3]]))
+
+
     def test_prepare(self):
         mono = StandardMonodromy()
         mono.prepare(self.morse_integ)
@@ -87,11 +103,9 @@ class testStandardMonodromy(object):
         assert_equal(fresh_snap.Mpp, np.array([[1.0]]))
         assert_equal(fresh_snap.Mqp, np.array([[0.0]]))
         assert_equal(fresh_snap.Mpq, np.array([[0.0]]))
-        # switch it elsewhere
-        fresh_snap.Mqq = np.array([[2.0]])
-        fresh_snap.Mqp = np.array([[3.0]])
-        fresh_snap.Mpq = np.array([[4.0]])
-        fresh_snap.Mpp = np.array([[5.0]])
+        # fix it to something else, then undo it
+        (fresh_snap.Mqq, fresh_snap.Mqp,
+         fresh_snap.Mpq, fresh_snap.Mpp) = self.fixed_monodromy_1D
         self.morse_monodromy.reset(fresh_snap)
         assert_equal(fresh_snap.Mqq, np.array([[1.0]]))
         assert_equal(fresh_snap.Mpp, np.array([[1.0]]))
@@ -99,16 +113,25 @@ class testStandardMonodromy(object):
         assert_equal(fresh_snap.Mpq, np.array([[0.0]]))
 
     def test_dMqq_dt(self):
+        # dMqq/dt = Hpq*Mqq + Hpp*Mpq
         self.morse_integ.reset(self.morse_snap0)
         dMqq_dt = self.morse_monodromy.dMqq_dt(self.morse_potential,
                                                self.morse_snap0)
+        # Hpq = Mpq = 0
         assert_equal(dMqq_dt.tolist(), [[0.0]])
         
         self.tully_integ.reset(self.tully_snap0)
         dMqq_dt = self.tully_monodromy.dMqq_dt(self.tully_potential,
                                                self.tully_snap0)
         d2Hdpdq = self.tully_potential.d2Hdpdq(self.tully_snap0)
-        assert_array_almost_equal(dMqq_dt.tolist(), d2Hdpdq)
+        # Mpq = 0; Mpp = 1 => dMqq/dt = Hpq 
+        assert_array_almost_equal(dMqq_dt, d2Hdpdq)
+        
+        snap = self.morse_snap0
+        (snap.Mqq, snap.Mqp, snap.Mpq, snap.Mpp) = self.fixed_monodromy_1D
+        dMqq_dt = self.morse_monodromy.dMqq_dt(self.morse_potential, snap)
+        # dMqq/dt = Hpp*Mpq = 5.0*4.0 = 20.0
+        assert_equal(dMqq_dt.tolist(), [[20.0]])
 
     def test_dMqp_dt(self):
         raise SkipTest
