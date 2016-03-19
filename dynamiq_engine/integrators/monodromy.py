@@ -102,7 +102,8 @@ class StandardMonodromy(MonodromyHelper):
         if self.second_derivatives.cross_terms:
             self.second_derivatives.set_d2Hdqdp(self._local_Hqp, snapshot)
             np.dot(self._local_Hqp, snapshot.Mpq, out=self._tmp)
-            np.add(self._local_dMpq_dt, self._tmp, out=self._local_dMpq_dt)
+            np.subtract(self._local_dMpq_dt, self._tmp, 
+                        out=self._local_dMpq_dt)
 
         return self._local_dMpq_dt
 
@@ -114,7 +115,8 @@ class StandardMonodromy(MonodromyHelper):
         if self.second_derivatives.cross_terms:
             self.second_derivatives.set_d2Hdqdp(self._local_Hqp, snapshot)
             np.dot(self._local_Hqp, snapshot.Mpp, out=self._tmp)
-            np.add(self._local_dMpp_dt, self._tmp, self._local_dMpp_dt)
+            np.subtract(self._local_dMpp_dt, self._tmp, 
+                        out=self._local_dMpp_dt)
 
         return self._local_dMpp_dt
 
