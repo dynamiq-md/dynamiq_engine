@@ -196,10 +196,25 @@ class testStandardMonodromyMMST(object):
         )
     
     def test_dMqp_dt(self):
+        # dMqp/dt = np.dot(Hpq, Mqp) + np.dot(Hpp, Mpp)
+        # first   = Hpp
+        # fixed   = np.array([[ 0.44793718,  0.54350904,  0.63908091],
+        #                     [-0.12866509, -0.11260484, -0.09654459],
+        #                     [ 0.00368687,  0.00419192,  0.00469697]])
         raise SkipTest
 
     def test_dMpq_dt(self):
+        # dMpq/dt = -np.dot(Hqq, Mqq) - np.dot(Hqp, Mpq)
+        # first   = -Hqq
+        # fixed   = np.array([[-0.93655992, -1.10516799, -1.27377606],
+        #                     [ 0.71755554,  0.78443199,  0.85130844],
+        #                     [ 0.67957471,  0.71324657,  0.74691843]])
         raise SkipTest
     
     def test_dMpp_dt(self):
+        # dMpp/dt = -np.dot(Hqq, Mqp) - np.dot(Hqp, Mpp)
+        # first   = -Hqp
+        # first   = np.array([[-0.95342073, -1.1220288 , -1.29063687],
+        #                     [ 0.72424318,  0.79111964,  0.85799609],
+        #                     [ 0.6829419 ,  0.71661376,  0.75028562]])
         raise SkipTest
