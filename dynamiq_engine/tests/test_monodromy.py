@@ -87,8 +87,7 @@ class testStandardMonodromy(object):
     def test_dMqq_dt(self):
         # dMqq/dt = Hpq*Mqq + Hpp*Mpq
         self.integ.reset(self.snap0)
-        dMqq_dt = self.monodromy.dMqq_dt(self.potential,
-                                         self.snap0)
+        dMqq_dt = self.monodromy.dMqq_dt(self.potential, self.snap0)
         # Hpq = Mpq = 0
         assert_equal(dMqq_dt.tolist(), [[0.0]])
         
@@ -103,7 +102,14 @@ class testStandardMonodromy(object):
         #         = Hpp * Mpp
         # first   = 5.0
         # fixed   = 5.0 * 5.0 = 25.0
-        raise SkipTest
+        self.integ.reset(self.snap0)
+        dMqp_dt = self.monodromy.dMqp_dt(self.potential, self.snap0)
+        assert_equal(dMqp_dt.tolist(), [[5.0]])
+
+        snap = self.snap0
+        (snap.Mqq, snap.Mqp, snap.Mpq, snap.Mpp) = self.fixed_monodromy_1D
+        dMqp_dt = self.monodromy.dMqp_dt(self.potential, snap)
+        assert_equal(dMqp_dt.tolist(), [[25.0]])
 
     def test_dMpq_dt(self):
         # dMpq/dt = -Hqq * Mqq - Hqp * Mpq
