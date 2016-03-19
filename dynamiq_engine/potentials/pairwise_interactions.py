@@ -3,9 +3,7 @@ from dynamiq_engine.potentials.potential_energy_surface import PotentialEnergySu
 
 class PairwiseInteraction(PotentialEnergySurface):
     def __init__(self):
-        super(PairwiseInteraction, self).__init__()
-        self.n_atoms = 1
-        self.n_spatial = 1
+        super(PairwiseInteraction, self).__init__(n_atoms=1, n_spatial=1)
 
     def V(self, snapshot):
         x = snapshot.coordinates[0]
@@ -17,6 +15,10 @@ class PairwiseInteraction(PotentialEnergySurface):
 
     def set_dHdp(self, dHdp, snapshot):
         dHdp[0] = snapshot.velocities[0]
+
+    def set_d2Hdq2(self, d2Hdq2, snapshot):
+        x = snapshot.coordinates[0]
+        d2Hdq2[(0,0)] = self.d2fdx2(x)
 
 
     def f(self, x):

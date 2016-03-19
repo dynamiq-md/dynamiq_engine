@@ -3,15 +3,23 @@ import numpy as np
 
 import math
 
+import dynamiq_engine.features as dynq_f
+import openpathsampling.engines.features as paths_f
 
 class CandyRozmus4(Integrator):
     """Fourth-order integrator by Candy and Rozmus.
 
+    Original integrator is from ???. Extensions to handle monodromy matrices
+    and action can be found in the appendix to ???. While this currently
+    supports MMST electronic variables, many properties of this integrator
+    (order, symplectic) may not hold in that case.
+
     References
     ----------
-
+    [1] Candy & Rozmus
+    [2] Manolopoulos
     """
-    def __init__(self, dt, potential, n_frames=1):
+    def __init__(self, dt, potential, n_frames=1, helpers=None):
         super(CandyRozmus4, self).__init__(dt)
         self._a_k = [
             0.5*(1.0 - 1.0/math.sqrt(3.0))*self.dt,
@@ -27,28 +35,28 @@ class CandyRozmus4(Integrator):
         ]
         n_spatial = potential.n_spatial
         n_atoms = potential.n_atoms
+        self.potential = potential
         self.local_dHdq = np.zeros(n_spatial * n_atoms)
         self.local_dHdp = np.zeros(n_spatial * n_atoms)
+        if helpers is None:
+            self.helpers = []
+        else:
+            self.helpers = helpers
 
+    _feature_type = {
+        'coordinates' : [paths_f.coordinates, dynq_f.electronic_coordinates],
+        'momenta' : [dynq_f.momenta, dynq_f.electronic_momenta],
+        'trajectory' : [dynq_f.action],
+        'misc' : [paths_f.xyz, paths_f.topology, dynq_f.velocities,
+                  dynq_f.monodromy]
+        # TODO: support for monodromy, prefactor, etc
+    }
     def prepare(self, feature_list):
-        import dynamiq_engine.features as dynq_f
-        import openpathsampling.engines.features as paths_f
+        # TODO: move start to Integrator superclass
         self.feature_list = feature_list
         # TODO: get another integrator to support electronic dofs; I don't
         # think this one tehcnically should
-        supported_features = [
-            paths_f.coordinates,
-            paths_f.xyz,
-            paths_f.topology,
-            dynq_f.momenta,
-            dynq_f.velocities,
-            dynq_f.action,
-            dynq_f.electronic_coordinates,
-            dynq_f.electronic_momenta
-            # TODO: add support for monodromy or for prefactor
-        ]
-        #print self.feature_list
-        #print supported_features
+        supported_features = sum(self._feature_type.values(), [])
         for f in self.feature_list:
             if f not in supported_features:
                 raise RuntimeError("Feature " + str(f) +
@@ -85,13 +93,20 @@ class CandyRozmus4(Integrator):
                              pre_position + position + post_position +
                              post_step)
 
-    def reset(self):
-        import dynamiq_engine.features as dynq_f
-        # import openpathsampling.features as paths_f
-
+    def reset(self, snapshot):
+        # TODO: move to superclass
+        for helper in self.helpers:
+            helper.reset(snapshot)
         if dynq_f.action in self.feature_list:
             self.local_S = 0.0
         pass
+
+    # Each type of update supported by the code is split into calculating
+    # the delta and the applying (updating) the value. This makes the
+    # integrator very flexible.
+    # TODO: I think much of this can be restructured to fit many
+    # integrators; it might be better to move the code to some abstract
+    # place
 
     def momentum_calculate(self, potential, snap, k):
         potential.set_dHdq(self.local_dHdq, snap)
@@ -129,6 +144,8 @@ class CandyRozmus4(Integrator):
         snap.action = self.local_S
 
     def step(self, potential, old_snap=None, new_snap=None):
+        # the actual struture of the steps is in self.update_steps, which is
+        # set in self.prepare()
         old_snap.copy_to(new_snap)
         #new_snap.copy_from(old_snap)
         for k in range(4):

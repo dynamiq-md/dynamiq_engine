@@ -27,22 +27,7 @@ class testConstantInteraction(object):
 class testHarmonicOscillatorInteraction(object):
     def setup(self):
         self.ho = ho_2_1.potential
-        topology = ho_2_1.topology
-        self.test_snap1 = dynq.Snapshot(
-            coordinates=np.array([1.0]),
-            momenta=np.array([1.0]),
-            topology=topology
-        )
-        self.test_snap2 = dynq.Snapshot(
-            coordinates=np.array([0.5]),
-            momenta=np.array([2.0]),
-            topology=topology
-        )
-        self.test_snap3 = dynq.Snapshot(
-            coordinates=np.array([2.0]),
-            momenta=np.array([-0.5]),
-            topology=topology
-        )
+        self.ho_test_snaps = ho_2_1.snapshots
 
     def test_f(self):
         tests = {
@@ -72,9 +57,12 @@ class testHarmonicOscillatorInteraction(object):
         check_function(self.ho.d2fdx2, tests)
 
     def test_H(self):
-        assert_almost_equal(self.ho.H(self.test_snap1), 1.0)
-        assert_almost_equal(self.ho.H(self.test_snap2), 4.25)
-        assert_almost_equal(self.ho.H(self.test_snap3), 1.25)
+        tests = {
+            self.ho_test_snaps[0] : 1.0,
+            self.ho_test_snaps[1] : 4.25,
+            self.ho_test_snaps[2] : 1.25
+        }
+        check_function(self.ho.H, tests)
 
     def test_T(self):
         # Definition of T is $L + V = p * dH/dp - H + V$; test this directly.
@@ -84,40 +72,48 @@ class testHarmonicOscillatorInteraction(object):
             np.dot(snap.momenta, pes.dHdp(snap))
             - self.ho.H(snap) + self.ho.V(snap)
         )
-        assert_almost_equal(self.ho.T(self.test_snap1),
-                            explicit_T(self.ho, self.test_snap1))
-        assert_almost_equal(self.ho.T(self.test_snap2),
-                            explicit_T(self.ho, self.test_snap2))
-        assert_almost_equal(self.ho.T(self.test_snap3),
-                            explicit_T(self.ho, self.test_snap3))
+        tests = {s : explicit_T(self.ho, s) for s in self.ho_test_snaps}
+        check_function(self.ho.T, tests)
 
     def test_dHdq(self):
-        assert_array_almost_equal(self.ho.dHdq(self.test_snap1), 
-                                  np.array([0.0]))
-        assert_array_almost_equal(self.ho.dHdq(self.test_snap2), 
-                                  np.array([-1.0]))
-        assert_array_almost_equal(self.ho.dHdq(self.test_snap3), 
-                                  np.array([2.0]))
+        tests = {
+            self.ho_test_snaps[0] : np.array([0.0]),
+            self.ho_test_snaps[1] : np.array([-1.0]),
+            self.ho_test_snaps[2] : np.array([2.0])
+        }
+        check_function(self.ho.dHdq, tests)
 
     def test_dHdp(self):
-        assert_array_almost_equal(self.ho.dHdp(self.test_snap1),
-                                  np.array([2.0]))
-        assert_array_almost_equal(self.ho.dHdp(self.test_snap2),
-                                  np.array([4.0]))
-        assert_array_almost_equal(self.ho.dHdp(self.test_snap3),
-                                  np.array([-1.0]))
+        tests = {
+            self.ho_test_snaps[0] : np.array([2.0]),
+            self.ho_test_snaps[1] : np.array([4.0]),
+            self.ho_test_snaps[2] : np.array([-1.0])
+        }
+        check_function(self.ho.dHdp, tests)
 
     def test_d2Hdq2(self):
-        raise SkipTest
+        tests = {s : np.array([[2.0]]) for s in self.ho_test_snaps}
+        check_function(self.ho.d2Hdq2, tests)
 
     def test_d2Hdpdq(self):
-        raise SkipTest
+        tests = {s : np.array([[0.0]]) for s in self.ho_test_snaps}
+        check_function(self.ho.d2Hdpdq, tests)
+
+        local_d2Hdpdq = None
+        for s in self.ho_test_snaps:
+            self.ho.set_d2Hdpdq(local_d2Hdpdq, s)
 
     def test_d2Hdqdp(self):
-        raise SkipTest
+        tests = {s : np.array([[0.0]]) for s in self.ho_test_snaps}
+        check_function(self.ho.d2Hdqdp, tests)
+
+        local_d2Hdqdp = None
+        for s in self.ho_test_snaps:
+            self.ho.set_d2Hdqdp(local_d2Hdqdp, s)
 
     def test_d2Hdp2(self):
-        raise SkipTest
+        tests = {s : np.array([[2.0]]) for s in self.ho_test_snaps}
+        check_function(self.ho.d2Hdp2, tests)
 
 
 class testTanhInteraction(object):
@@ -154,7 +150,9 @@ class testTanhInteraction(object):
 
 class testMorseInteraction(object):
     def setup(self):
-        self.morse = MorseInteraction(D=30.0, beta=0.08, x0=0.5)
+        #self.morse = MorseInteraction(D=30.0, beta=0.08, x0=0.5)
+        self.morse = anharmonic_morse.potential
+        self.morse_test_snaps = anharmonic_morse.snapshots
 
     def test_f(self):
         tests = {
@@ -182,6 +180,18 @@ class testMorseInteraction(object):
             5.0 : 0.105918023365982
         }
         check_function(self.morse.d2fdx2, tests)
+
+    def test_d2Hdq2(self):
+        tests = {
+            self.morse_test_snaps[0] : 0.432293130684491,
+            self.morse_test_snaps[1] : 0.543360556440359,
+            self.morse_test_snaps[2] : 0.105918023365982
+        }
+        check_function(self.morse.d2Hdq2, tests)
+
+    def test_d2Hdp2(self):
+        tests = {s : np.array([[5.0]]) for s in self.morse_test_snaps}
+        check_function(self.morse.d2Hdp2, tests)
 
 class testQuarticInteraction(object):
     def setup(self):

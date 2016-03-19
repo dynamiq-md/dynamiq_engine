@@ -72,7 +72,7 @@ class testCandyRozmus4(object):
                                  momenta=np.array([1.0]),
                                  topology=self.topology)
         exact = self.exact_ho(new_snap, 0.1)
-        self.integ.reset()
+        self.integ.reset(new_snap)
         for i in range(10):
             self.integ.step(self.potential, new_snap, new_snap)
         # TODO: test action is correct
@@ -108,7 +108,7 @@ class testCandyRozmus4MMST(object):
             + np.dot(snap.electronic_momenta, pes.electronic_dHdp(snap))
             #- pes.H(snap) + pes.V(snap)
         )
-        uncoupled_integ.reset()
+        uncoupled_integ.reset(uncoupled_snap)
         for i in range(10):
             uncoupled_integ.step(uncoupled, uncoupled_snap, uncoupled_snap)
             t=0.01*(i+1)

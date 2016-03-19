@@ -8,6 +8,9 @@ from dynamiq_engine.potentials.mmst_hamiltonian import *
 
 class testMMSTHamiltonian(object):
     def setup(self):
+        # TODO: create a test for a 3-electronic by 2-nuclear dof system
+        # for now, we only have thorough tests for 0 or 1 nuclear DOFs; the
+        # monodromy matrices deserve better attention beyond that.
         from example_systems import tully
         self.tully = tully.potential
         self.tully_snap = copy.deepcopy(tully.snapshots[0])
@@ -155,3 +158,83 @@ class testMMSTHamiltonian(object):
         assert_almost_equal(explicit_T(self.four_state, self.four_state_snap),
                             self.four_state.T(self.four_state_snap))
 
+    def test_d2Hdq2(self):
+        tully_d2Hdq2 = self.tully.d2Hdq2(self.tully_snap)
+        V_ij = self.tully.H_matrix.numeric_matrix(self.tully_snap)
+        assert_almost_equal(tully_d2Hdq2[0][0], V_ij[0][0])
+        assert_almost_equal(tully_d2Hdq2[0][1], V_ij[0][1])
+        assert_almost_equal(tully_d2Hdq2[1][0], V_ij[1][0])
+        assert_almost_equal(tully_d2Hdq2[1][1], V_ij[1][1])
+        
+        runnables = self.tully.H_matrix.runnable_entries
+        dVdx_ij = {}
+        d2Vdx2_ij = {}
+        for k in runnables.keys():
+            dVdx_ij[k] = runnables[k].dHdq(self.tully_snap)
+            d2Vdx2_ij[k] = runnables[k].d2Hdq2(self.tully_snap)
+
+        x = self.tully_snap.electronic_coordinates
+        p = self.tully_snap.electronic_momenta
+
+        assert_almost_equal(tully_d2Hdq2[0][2],
+                            x[0]*dVdx_ij[(0,0)] + x[1]*dVdx_ij[(0,1)])
+        assert_almost_equal(tully_d2Hdq2[2][0],
+                            x[0]*dVdx_ij[(0,0)] + x[1]*dVdx_ij[(1,0)])
+        assert_almost_equal(tully_d2Hdq2[1][2],
+                            x[0]*dVdx_ij[(1,0)] + x[1]*dVdx_ij[(1,1)])
+        assert_almost_equal(tully_d2Hdq2[2][1],
+                            x[0]*dVdx_ij[(0,1)] + x[1]*dVdx_ij[(1,1)])
+
+        Hqq_22_00 = 0.5 * (x[0]*x[0] + p[0]*p[0] - 1.0) * d2Vdx2_ij[(0,0)]
+        Hqq_22_11 = 0.5 * (x[1]*x[1] + p[1]*p[1] - 1.0) * d2Vdx2_ij[(1,1)]
+        Hqq_22_01 = 0.5 * (x[0]*x[1] + p[0]*p[1]) * d2Vdx2_ij[(0,1)]
+        Hqq_22_10 = 0.5 * (x[1]*x[0] + p[1]*p[0]) * d2Vdx2_ij[(1,0)]
+        assert_almost_equal(
+            tully_d2Hdq2[2][2], 
+            (Hqq_22_00 + Hqq_22_01 + Hqq_22_10 + Hqq_22_11)[0][0]
+        )
+
+    def test_d2Hdp2(self):
+        tully_d2Hdp2 = self.tully.d2Hdp2(self.tully_snap)
+        V_ij = self.tully.H_matrix.numeric_matrix(self.tully_snap)
+        # electronic-electronic
+        assert_almost_equal(tully_d2Hdp2[0][0], V_ij[0][0])
+        assert_almost_equal(tully_d2Hdp2[0][1], V_ij[0][1])
+        assert_almost_equal(tully_d2Hdp2[1][0], V_ij[1][0])
+        assert_almost_equal(tully_d2Hdp2[1][1], V_ij[1][1])
+
+        # nuclear-nuclear
+        assert_almost_equal(tully_d2Hdp2[2][2], 1.0/1980.0)
+
+        # nuclear-electronic
+        for i in [0, 1]:
+            assert_equal(tully_d2Hdp2[i][2], 0.0)
+            assert_equal(tully_d2Hdp2[2][i], 0.0)
+
+    def test_d2Hdqdp_d2Hdpdq(self):
+        tully_d2Hdqdp = self.tully.d2Hdqdp(self.tully_snap)
+        tully_d2Hdpdq = self.tully.d2Hdpdq(self.tully_snap)
+
+        # nuclear-electronic
+        runnables = self.tully.H_matrix.runnable_entries
+        dVdx_ij = {}
+        for k in runnables.keys():
+            dVdx_ij[k] = runnables[k].dHdq(self.tully_snap)
+        p = self.tully_snap.electronic_momenta
+
+        for i in range(3):
+            for j in range(3):
+                # assert symmetric; then only test Hqp
+                assert_equal(tully_d2Hdqdp[(i,j)], tully_d2Hdpdq[(j,i)])
+                if (i,j) == (2, 0):
+                    assert_almost_equal(
+                        tully_d2Hdqdp[(i,j)],
+                        p[0]*dVdx_ij[(0,0)] + p[1]*dVdx_ij[(1,0)]
+                    )
+                elif (i,j) == (2, 1):
+                    assert_almost_equal(
+                        tully_d2Hdqdp[(i,j)],
+                        p[0]*dVdx_ij[(0,1)] + p[1]*dVdx_ij[(1,1)]
+                    )
+                else:
+                    assert_equal(tully_d2Hdqdp[(i,j)], 0.0)
