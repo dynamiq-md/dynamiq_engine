@@ -39,7 +39,7 @@ class testStandardMonodromy(object):
             topology=self.topology
         )
         # Hpp = [[5.0]]
-        # Hqq = [[-0.203886208716337]]
+        # Hqq = [[0.432293130684491]]
 
         self.fixed_monodromy_1D = (np.array([[2.0]]), np.array([[3.0]]),
                                    np.array([[4.0]]), np.array([[5.0]]))
@@ -100,7 +100,7 @@ class testStandardMonodromy(object):
     def test_dMqp_dt(self):
         # dMqp/dt = Hpq * Mqp + Hpp * Mpp
         #         = Hpp * Mpp
-        # first   = 5.0
+        # first   = 5.0 * 1.0 = 5.0
         # fixed   = 5.0 * 5.0 = 25.0
         self.integ.reset(self.snap0)
         dMqp_dt = self.monodromy.dMqp_dt(self.potential, self.snap0)
@@ -114,16 +114,30 @@ class testStandardMonodromy(object):
     def test_dMpq_dt(self):
         # dMpq/dt = -Hqq * Mqq - Hqp * Mpq
         #         = -Hqq * Mqq
-        # first   = -(-0.203886208716337) = 0.203886208716337
-        # fixed   = -(-0.203886208716337) * 2.0 = 0.407772417432674
-        raise SkipTest
+        # first   = -(0.432293130684491) * 1.0 = -0.432293130684491
+        # fixed   = -(0.432293130684491) * 2.0 = -0.864586261368982
+        self.integ.reset(self.snap0)
+        dMpq_dt = self.monodromy.dMpq_dt(self.potential, self.snap0)
+        assert_array_almost_equal(dMpq_dt, np.array([[-0.432293130684491]]))
+        
+        snap = self.snap0
+        (snap.Mqq, snap.Mqp, snap.Mpq, snap.Mpp) = self.fixed_monodromy_1D
+        dMpq_dt = self.monodromy.dMpq_dt(self.potential, snap)
+        assert_array_almost_equal(dMpq_dt, np.array([[-0.864586261368982]]))
 
     def test_dMpp_dt(self):
         # dMpp/dt = -Hqq * Mqp - Hqp * Mpp
         #         = -Hqq * Mqp
-        # first   = 0.0
-        # fixed   = -(-0.203886208716337) * 3.0 = 0.611658626149011
-        raise SkipTest
+        # first   = -(0.432293130684491) * 0.0 = 0.0
+        # fixed   = -(0.432293130684491) * 3.0 = -1.29687939205347
+        self.integ.reset(self.snap0)
+        dMpp_dt = self.monodromy.dMpp_dt(self.potential, self.snap0)
+        assert_array_almost_equal(dMpp_dt, np.array([[0.0]]))
+
+        snap = self.snap0
+        (snap.Mqq, snap.Mqp, snap.Mpq, snap.Mpp) = self.fixed_monodromy_1D
+        dMpp_dt = self.monodromy.dMpp_dt(self.potential, snap)
+        assert_array_almost_equal(dMpp_dt, np.array([[-1.29687939205347]]))
 
 
 class testStandardMonodromyMMST(object):
