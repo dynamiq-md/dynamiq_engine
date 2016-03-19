@@ -83,7 +83,16 @@ class StandardMonodromy(MonodromyHelper):
 
     def dMqp_dt(self, potential, snapshot):
         """dMqp_dt = Hpq*Mqp + Hpp*Mpp"""
-        pass
+        self.second_derivatives.set_d2Hdp2(self._local_Hpp, snapshot)
+        np.dot(self._local_Hpp, snapshot.Mpp, out=self._local_dMqp_dt)
+
+        if self.second_derivatives.cross_terms:
+            self.second_derivatives.set_d2dpdq(self._local_Hpq, snapshot)
+            np.dot(self._local_Hpq, snapshot.Mqp, out=self._tmp)
+            np.add(self._local_dMqp_dt, self._tmp, out=self._local_dMqp_dt)
+
+        return self._local_dMqp_dt
+
 
     def dMpq_dt(self, potential, snapshot):
         """dMpq_dt = -Hqq*Mqq - Hqp*Mpq"""
