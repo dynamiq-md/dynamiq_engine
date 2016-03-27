@@ -1,3 +1,4 @@
+#/usr/bin/env python
 import dynamiq_engine as dynq
 import openpathsampling.engines as peng
 import numpy as np
@@ -26,12 +27,42 @@ def morse_run(ntrajs, nsteps):
     engine, snapshot = morse_setup()
     run_engine(engine, snapshot, ntrajs, nsteps)
 
-cprofile_tests = {
-    'morse_run(ntrajs=1, nsteps=1000)': "morse_1_1000.pstats",
-    'morse_run(ntrajs=100, nsteps=10)': "morse_100_10.pstats"
+benchmarks = {
+    'morse_1_1000': ('morse_run', {'ntrajs': 1, 'nsteps': 1000}),
+    'morse_100_10': ('morse_run', {'ntrajs': 100, 'nsteps': 10})
 }
 
+def argparse():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--timing', action='store_true')
+    parser.add_argument('--cprofile', action='store_true')
+    parser.add_argument('--pyinstrument', action='store_true')
+    return parser.parse_args()
+
+def make_benchmark_cmd(bench):
+    fcn = benchmarks[bench][0]
+    args = benchmarks[bench][1]
+    args_str = ", ".join([k+"="+str(args[k]) for k in args])
+    cmd_str = fcn+"("+args_str+")"
+    return cmd_str
+
+import sys
 if __name__ == "__main__":
-    import cProfile
-    for k in cprofile_tests:
-        cProfile.run(k, cprofile_tests[k])
+    opts = argparse()
+    if opts.timing:
+        import timeit
+        morse_run(1, 1000)
+        for bench in benchmarks:
+            cmd = make_benchmark_cmd(bench)
+            fcn = benchmarks[bench][0]
+            print bench, ":", timeit.timeit(cmd, 
+                                            'from __main__ import ' + fcn, 
+                                            number=5)
+    if opts.cprofile:
+        import cProfile
+        for bench in benchmarks:
+            cProfile.run(make_benchmark_cmd(bench), bench + ".pstats")
+    if opts.pyinstrument:
+        print "pyinstrument"
+        pass
