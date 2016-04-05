@@ -47,8 +47,7 @@ class CandyRozmus4(Integrator):
         'coordinates' : [paths_f.coordinates, dynq_f.electronic_coordinates],
         'momenta' : [dynq_f.momenta, dynq_f.electronic_momenta],
         'trajectory' : [dynq_f.action],
-        'misc' : [paths_f.xyz, paths_f.topology, dynq_f.velocities,
-                  dynq_f.monodromy]
+        'misc' : [paths_f.topology, dynq_f.monodromy]
         # TODO: support for monodromy, prefactor, etc
     }
     def prepare(self, feature_list):
