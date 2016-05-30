@@ -12,11 +12,12 @@ curl ${OPS_CONDA_RECIPE}/meta.yaml |
     grep -v "openpathsampling" > ${MYDIR}/ops_reqs.txt
 
 cp ${MYDIR}/../conda-recipe/meta.yaml ${MYDIR}/meta.yaml
-echo '#!/bin/bash
-export ORIG=`pwd`
+echo "#!/bin/bash
+conda install --file ${MYDIR}/ops_reqs.txt" > ${MYDIR}/build.sh
+echo 'export ORIG=`pwd`
 cd && git clone https://github.com/choderalab/openpathsampling
 cd openpathsampling && python setup.py install
 cd $ORIG
 
 ${PYTHON} setup.py install
-' > ${MYDIR}/build.sh
+' >> ${MYDIR}/build.sh

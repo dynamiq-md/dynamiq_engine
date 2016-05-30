@@ -13,8 +13,8 @@ script:
     - conda config --set always_yes true
     #- source devtools/conda-ops-recipe/other_conda_build.sh
     - source devtools/conda-ops-recipe/get_ops_reqs.sh
-    - conda install --file devtools/conda-ops-recipe/ops_reqs.txt
-    - conda build devtools/conda-ops-recipe
+    #- conda install --file devtools/conda-ops-recipe/ops_reqs.txt
+    - conda build devtools/conda-ops-recipe  # if OPS conda is failing
     #- conda build devtools/conda-recipe
     
     - source activate _test
