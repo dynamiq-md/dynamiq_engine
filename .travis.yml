@@ -10,8 +10,10 @@ install:
 
 script:
     - conda install --yes conda-build
-    - source devtools/conda-ops-recipe/other_conda_build.sh
-    - conda build devtools/conda-ops-recipe
+    #- source devtools/conda-ops-recipe/other_conda_build.sh
+    #- conda build devtools/conda-ops-recipe
+    - source devtools/conda-ops-recipe/get_ops_reqs.sh
+    - conda install < devtools/conda-ops-recipe/ops_reqs.txt
     - conda build devtools/conda-recipe
     
     - source activate _test
