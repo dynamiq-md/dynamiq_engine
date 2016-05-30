@@ -10,3 +10,11 @@ curl ${OPS_CONDA_RECIPE}/meta.yaml |
     grep "\ \ \ \ \-\ " | 
     sed 's/\ \ \ \ \-\ //' |
     grep -v "openpathsampling" > ${MYDIR}/ops_reqs.txt
+
+cp ${MYDIR}/../conda-recipe/meta.yaml ${MYDIR}/meta.yaml
+cat '#!/bin/bash
+export ORIG=`pwd`
+cd && git clone https://github.com/choderalab/openpathsampling
+cd openpathsampling && python setup.py install
+cd $ORIG
+' > ${MYDIR}/build.sh
