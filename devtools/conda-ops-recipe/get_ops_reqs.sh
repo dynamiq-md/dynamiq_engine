@@ -17,4 +17,6 @@ export ORIG=`pwd`
 cd && git clone https://github.com/choderalab/openpathsampling
 cd openpathsampling && python setup.py install
 cd $ORIG
+
+${PYTHON} setup.py install
 ' > ${MYDIR}/build.sh
