@@ -10,15 +10,13 @@ install:
 
 script:
     - conda install --yes conda-build
-    - conda config --set always_yes true
-    #- source devtools/conda-ops-recipe/other_conda_build.sh
-    - source devtools/conda-ops-recipe/get_ops_reqs.sh
-    #- conda install --file devtools/conda-ops-recipe/ops_reqs.txt
-    - conda build devtools/conda-ops-recipe  # if OPS conda is failing
+    # if OPS conda is working, use the following 3 lines
     #- conda build devtools/conda-recipe
-    
-    - source activate _test
-    - conda clean -pltis --yes
+    #- source activate _test
+    #- conda clean -pltis --yes
+    # if OPS conda is failing, use the following 2 lines
+    - source devtools/no-ops-conda/make_build.sh
+    - source devtools/no-ops-conda/build.sh
     - python -c "import openpathsampling; print 'OPS version' + openpathsampling.version.full_version"
     - nosetests -v --with-coverage
 
