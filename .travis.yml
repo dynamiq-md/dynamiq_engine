@@ -10,6 +10,7 @@ install:
 
 script:
     - conda install --yes conda-build
+    - conda config --set always_yes true
     # if OPS conda is working, use the following 3 lines
     #- conda build devtools/conda-recipe
     #- source activate _test
